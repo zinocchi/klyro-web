@@ -5,7 +5,8 @@ import { queryClient } from './lib/queryClient';
 import { AppLayout } from './components/layout/AppLayout';
 import { ProtectedRoute } from './components/layout/ProtectedRoute';
 import { PublicRoute } from './components/layout/PublicRoute';
-import { LoginPage, RegisterPage } from './pages/AuthPages';
+import { LoginPage } from './features/auth/pages/LoginPage';
+import { RegisterPage } from './features/auth/pages/RegisterPage';
 import { DashboardPage, HabitsPage, TasksPage } from './pages/WorkspacePages';
 
 function App() {
