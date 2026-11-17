@@ -1,0 +1,166 @@
+import { useState } from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
+import { Button } from '../../../components/ui/Button';
+import { Input } from '../../../components/ui/Input';
+import { Modal } from '../../../components/ui/Modal';
+import { Select } from '../../../components/ui/Select';
+import { ApiError } from '../../../lib/api';
+import { TASK_PRIORITIES, TASK_STATUSES, type Task } from '../../../types/api.types';
+import { useCreateTask, useUpdateTask } from '../hooks/useTasks';
+import { taskFormSchema, type TaskFormValues } from '../schemas/task.schema';
+import { PRIORITY_LABEL, STATUS_LABEL } from '../taskLabels';
+
+export interface TaskFormModalProps {
+  open: boolean;
+  onClose: () => void;
+  task?: Task | null;
+}
+
+const EMPTY: TaskFormValues = {
+  title: '',
+  description: '',
+  due_date: '',
+  status: 'PENDING',
+  priority: 'MEDIUM',
+};
+
+export function TaskFormModal({ open, onClose, task }: TaskFormModalProps) {
+  return (
+    <Modal open={open} onClose={onClose} title={task ? 'Edit task' : 'New task'}>
+      {/* Remount per task so the form starts from that task's values. */}
+      <TaskForm key={task?.id ?? 'new'} task={task} onClose={onClose} />
+    </Modal>
+  );
+}
+
+function TaskForm({ task, onClose }: { task?: Task | null; onClose: () => void }) {
+  const [formError, setFormError] = useState<string | null>(null);
+  const createMutation = useCreateTask();
+  const updateMutation = useUpdateTask();
+
+  const {
+    register,
+    handleSubmit,
+    setError,
+    formState: { errors },
+  } = useForm<TaskFormValues>({
+    resolver: zodResolver(taskFormSchema),
+    defaultValues: task
+      ? {
+          title: task.title,
+          description: task.description ?? '',
+          due_date: task.due_date ?? '',
+          status: task.status,
+          priority: task.priority,
+        }
+      : EMPTY,
+  });
+
+  const onSubmit = (values: TaskFormValues) => {
+    setFormError(null);
+    const payload = {
+      title: values.title,
+      description: values.description || undefined,
+      due_date: values.due_date || undefined,
+      status: values.status,
+      priority: values.priority,
+    };
+
+    const onError = (error: unknown) => {
+      if (error instanceof ApiError) {
+        for (const field of error.fieldErrors) {
+          if (field.field in values) {
+            setError(field.field as keyof TaskFormValues, { message: field.message });
+          }
+        }
+        setFormError(error.message);
+        toast.error(error.message);
+        return;
+      }
+      setFormError('Something went wrong');
+      toast.error('Something went wrong');
+    };
+
+    if (task) {
+      updateMutation.mutate(
+        { id: task.id, payload },
+        {
+          onSuccess: () => {
+            toast.success('Task updated');
+            onClose();
+          },
+          onError,
+        },
+      );
+      return;
+    }
+
+    createMutation.mutate(payload, {
+      onSuccess: () => {
+        toast.success('Task created');
+        onClose();
+      },
+      onError,
+    });
+  };
+
+  const isPending = createMutation.isPending || updateMutation.isPending;
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)} noValidate className="flex flex-col gap-4">
+      {formError && (
+        <p className="rounded-[6px] bg-[#ffd4d4] px-3 py-2 text-body-sm text-ink">{formError}</p>
+      )}
+
+      <Input
+        label="Title"
+        placeholder="What needs doing?"
+        error={errors.title?.message}
+        {...register('title')}
+      />
+
+      <Input
+        label="Description"
+        placeholder="Optional details"
+        error={errors.description?.message}
+        {...register('description')}
+      />
+
+      <Input
+        label="Due date"
+        type="date"
+        error={errors.due_date?.message}
+        {...register('due_date')}
+      />
+
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <Select label="Status" error={errors.status?.message} {...register('status')}>
+          {TASK_STATUSES.map((s) => (
+            <option key={s} value={s}>
+              {STATUS_LABEL[s]}
+            </option>
+          ))}
+        </Select>
+
+        <Select label="Priority" error={errors.priority?.message} {...register('priority')}>
+          {TASK_PRIORITIES.map((p) => (
+            <option key={p} value={p}>
+              {PRIORITY_LABEL[p]}
+            </option>
+          ))}
+        </Select>
+      </div>
+
+      <div className="mt-2 flex justify-end gap-3">
+        <Button type="button" variant="secondary" onClick={onClose} disabled={isPending}>
+          Cancel
+        </Button>
+        <Button type="submit" isLoading={isPending}>
+          {task ? 'Save changes' : 'Create task'}
+        </Button>
+      </div>
+    </form>
+  );
+}
