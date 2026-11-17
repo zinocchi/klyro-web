@@ -7,8 +7,9 @@ import { ProtectedRoute } from './components/layout/ProtectedRoute';
 import { PublicRoute } from './components/layout/PublicRoute';
 import { LoginPage } from './features/auth/pages/LoginPage';
 import { RegisterPage } from './features/auth/pages/RegisterPage';
+import { DashboardPage } from './features/dashboard/pages/DashboardPage';
+import { HabitsPage } from './features/habits/pages/HabitsPage';
 import { TasksPage } from './features/tasks/pages/TasksPage';
-import { DashboardPage, HabitsPage } from './pages/WorkspacePages';
 
 function App() {
   return (
