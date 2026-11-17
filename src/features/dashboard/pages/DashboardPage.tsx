@@ -82,17 +82,17 @@ export function DashboardPage() {
     <div className="flex flex-col gap-6">
       <header className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-heading-sm font-medium text-ink">
+          <h1 className="break-words text-heading-sm font-medium text-ink">
             Hello{user?.email ? `, ${user.email}` : ''}
           </h1>
-          <p className="mt-1 text-body-sm text-slate">{formatLongDate(today)}</p>
+          <p className="mt-1 break-words text-body-sm text-slate">{formatLongDate(today)}</p>
         </div>
-        <div className="flex flex-wrap gap-3">
-          <Button onClick={() => setTaskModalOpen(true)}>
+        <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
+          <Button onClick={() => setTaskModalOpen(true)} className="w-full sm:w-auto">
             <Plus size={16} />
             New Task
           </Button>
-          <Button onClick={() => setHabitModalOpen(true)}>
+          <Button onClick={() => setHabitModalOpen(true)} className="w-full sm:w-auto">
             <Plus size={16} />
             New Habit
           </Button>
@@ -150,10 +150,10 @@ export function DashboardPage() {
               {habits.map((habit) => (
                 <li
                   key={habit.id}
-                  className="flex items-center justify-between gap-3 rounded-[6px] border border-pebble px-3 py-3"
+                  className="flex flex-col gap-2 rounded-[6px] border border-pebble px-3 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-3"
                 >
                   <div className="min-w-0">
-                    <p className="truncate text-body-sm font-medium text-ink">{habit.title}</p>
+                    <p className="break-words text-body-sm font-medium text-ink">{habit.title}</p>
                     <p className="mt-0.5 flex items-center gap-1 text-caption text-slate">
                       <Flame size={12} className="text-apricot" />
                       {habit.streak_count} day streak
@@ -165,7 +165,7 @@ export function DashboardPage() {
                     aria-label={`Check in ${habit.title}`}
                     onClick={() => toggleCheckIn(habit.id, habit.completed)}
                     className={cn(
-                      'rounded-full px-4 py-1.5 text-caption font-medium transition-opacity',
+                      'w-full rounded-full px-4 py-1.5 text-caption font-medium transition-opacity sm:w-auto',
                       habit.completed
                         ? 'bg-mint text-ink'
                         : 'bg-monday-violet text-snow hover:opacity-90',
@@ -201,15 +201,15 @@ export function DashboardPage() {
               {stats.focusTasks.map((task) => (
                 <li
                   key={task.id}
-                  className="flex items-center justify-between gap-3 rounded-[6px] border border-pebble px-3 py-3"
+                  className="flex flex-col gap-2 rounded-[6px] border border-pebble px-3 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-3"
                 >
                   <div className="min-w-0">
-                    <p className="truncate text-body-sm font-medium text-ink">{task.title}</p>
+                    <p className="break-words text-body-sm font-medium text-ink">{task.title}</p>
                     {task.due_date && (
                       <p className="mt-0.5 text-caption text-slate">Due {task.due_date}</p>
                     )}
                   </div>
-                  <div className="flex shrink-0 items-center gap-2">
+                  <div className="flex shrink-0 flex-wrap items-center gap-2">
                     <StatusPill status={task.status} />
                     <PriorityPill priority={task.priority} />
                   </div>

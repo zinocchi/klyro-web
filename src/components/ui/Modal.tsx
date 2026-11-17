@@ -28,7 +28,7 @@ export function Modal({ open, onClose, title, children, footer, className }: Mod
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 flex items-end justify-center overflow-y-auto p-0 sm:items-center sm:p-4">
       <div
         className="absolute inset-0 bg-ink/40"
         onClick={onClose}
@@ -39,7 +39,7 @@ export function Modal({ open, onClose, title, children, footer, className }: Mod
         aria-modal="true"
         aria-label={title}
         className={cn(
-          'relative z-10 w-full max-w-lg rounded-[24px] border border-mist bg-snow p-6 shadow-[var(--shadow-elevated)]',
+          'relative z-10 max-h-[92dvh] w-full max-w-lg overflow-y-auto rounded-t-[24px] border border-mist bg-snow p-5 shadow-[var(--shadow-elevated)] sm:max-h-[85vh] sm:rounded-[24px] sm:p-6',
           className,
         )}
       >
@@ -54,7 +54,7 @@ export function Modal({ open, onClose, title, children, footer, className }: Mod
             <X size={20} />
           </button>
         </div>
-        <div className="max-h-[70vh] overflow-y-auto">{children}</div>
+        <div className="max-h-[60dvh] overflow-y-auto sm:max-h-[65vh]">{children}</div>
         {footer && <div className="mt-6 flex justify-end gap-3">{footer}</div>}
       </div>
     </div>

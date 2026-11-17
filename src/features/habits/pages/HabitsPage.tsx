@@ -29,14 +29,14 @@ export function HabitsPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <header className="flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <h1 className="text-heading-sm font-medium text-ink">Habits</h1>
+      <header className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+        <div className="min-w-0">
+          <h1 className="break-words text-heading-sm font-medium text-ink">Habits</h1>
           <p className="mt-1 text-body-sm text-slate">
             Check in daily and keep your streak alive.
           </p>
         </div>
-        <Button onClick={openCreate}>
+        <Button onClick={openCreate} className="w-full sm:w-auto">
           <Plus size={16} />
           New Habit
         </Button>
@@ -63,7 +63,7 @@ export function HabitsPage() {
           title="No habits yet"
           description="Create a habit and start building a streak."
           action={
-            <Button onClick={openCreate}>
+            <Button onClick={openCreate} className="w-full sm:w-auto">
               <Plus size={16} />
               New Habit
             </Button>

@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { Card } from '../../../components/ui/Card';
 import { EmptyState } from '../../../components/ui/EmptyState';
-import { Inbox } from 'lucide-react';
+import { Inbox, Plus } from 'lucide-react';
+import { Button } from '../../../components/ui/Button';
+import { cn } from '../../../lib/utils';
 import type { Task, TaskStatus } from '../../../types/api.types';
 import { groupByStatus } from '../hooks/useTasks';
 import { STATUS_LABEL } from '../taskLabels';
@@ -12,16 +14,17 @@ export type ViewMode = 'list' | 'board';
 export interface TaskBoardProps {
   tasks: Task[];
   onEdit: (task: Task) => void;
+  onCreate?: () => void;
 }
 
 const COLUMNS: TaskStatus[] = ['PENDING', 'IN_PROGRESS', 'COMPLETED'];
 
-export function TaskBoard({ tasks, onEdit }: TaskBoardProps) {
+export function TaskBoard({ tasks, onEdit, onCreate }: TaskBoardProps) {
   const [view, setView] = useState<ViewMode>('list');
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex justify-end">
+      <div className="flex justify-center sm:justify-end">
         <div
           role="tablist"
           aria-label="Task view"
@@ -34,11 +37,12 @@ export function TaskBoard({ tasks, onEdit }: TaskBoardProps) {
               type="button"
               aria-selected={view === mode}
               onClick={() => setView(mode)}
-              className={
+              className={cn(
+                'rounded-full px-4 py-1.5 text-body-sm font-medium transition-colors',
                 view === mode
-                  ? 'rounded-full bg-monday-violet px-4 py-1.5 text-body-sm font-medium text-snow'
-                  : 'rounded-full px-4 py-1.5 text-body-sm font-medium text-slate hover:text-ink'
-              }
+                  ? 'bg-monday-violet text-snow'
+                  : 'text-slate hover:text-ink',
+              )}
             >
               {mode === 'list' ? 'List View' : 'Board View'}
             </button>
@@ -51,6 +55,14 @@ export function TaskBoard({ tasks, onEdit }: TaskBoardProps) {
           icon={<Inbox size={32} />}
           title="No tasks yet"
           description="Create your first task to start planning your day."
+          action={
+            onCreate ? (
+              <Button onClick={onCreate}>
+                <Plus size={16} />
+                New Task
+              </Button>
+            ) : undefined
+          }
         />
       ) : view === 'list' ? (
         <Card className="divide-y divide-pebble p-2">

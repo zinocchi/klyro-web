@@ -35,12 +35,12 @@ export function TaskCard({ task, onEdit }: TaskCardProps) {
   };
 
   return (
-    <div className="flex items-start gap-4 rounded-[6px] border border-transparent px-3 py-3 transition-colors hover:border-pebble hover:bg-cloud">
+    <div className="flex flex-col gap-3 rounded-[6px] border border-transparent px-3 py-3 transition-colors hover:border-pebble hover:bg-cloud sm:flex-row sm:items-start sm:gap-4">
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-2">
           <p
             className={cn(
-              'truncate text-body-sm font-medium text-ink',
+              'min-w-0 break-words text-body-sm font-medium text-ink sm:truncate',
               task.status === 'COMPLETED' && 'text-iron line-through',
             )}
           >
@@ -54,7 +54,7 @@ export function TaskCard({ task, onEdit }: TaskCardProps) {
           <p className="mt-1 line-clamp-2 text-caption text-slate">{task.description}</p>
         )}
 
-        <div className="mt-2 flex items-center gap-3 text-caption text-iron">
+        <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-caption text-iron">
           {task.due_date && <span>Due {formatDate(task.due_date)}</span>}
           <span>Created {formatDate(task.created_at)}</span>
         </div>
@@ -65,7 +65,7 @@ export function TaskCard({ task, onEdit }: TaskCardProps) {
           aria-label="Change task status"
           value={task.status}
           onChange={(e) => changeStatus(e.target.value as TaskStatus)}
-          className="rounded-[6px] border border-pebble bg-snow px-2 py-1 text-caption text-slate focus:border-monday-violet focus:outline-none"
+          className="min-w-0 flex-1 rounded-[6px] border border-pebble bg-snow px-2 py-1.5 text-caption text-slate focus:border-monday-violet focus:outline-none sm:flex-none"
         >
           {TASK_STATUSES.map((s) => (
             <option key={s} value={s}>

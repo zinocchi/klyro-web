@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { Button } from '../../../components/ui/Button';
 import { Input } from '../../../components/ui/Input';
 import { Spinner } from '../../../components/ui/Spinner';
+import { KlyroLogo } from '../../../components/brand/KlyroLogo';
 import { useAuthStore } from '../../../stores/authStore';
 import { ApiError, register as registerUser } from '../api/auth.api';
 import { registerSchema, type RegisterInput } from '../schemas/auth.schema';
@@ -48,13 +49,10 @@ export function RegisterPage() {
   const onSubmit = (values: RegisterInput) => mutation.mutate(values);
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-cloud p-6">
-      <div className="w-full max-w-md rounded-[24px] border border-mist bg-snow p-8 shadow-[var(--shadow-xl)]">
+    <div className="flex min-h-screen items-center justify-center bg-cloud p-4 sm:p-6">
+      <div className="w-full max-w-md rounded-[24px] border border-mist bg-snow p-6 shadow-[var(--shadow-xl)] sm:p-8">
         <div className="mb-6 flex flex-col items-center gap-3 text-center">
-          <span
-            aria-hidden="true"
-            className="inline-block h-10 w-10 rounded-full bg-[var(--gradient-prism)]"
-          />
+          <KlyroLogo height={36} />
           <h1 className="text-heading-sm font-medium text-ink">Create your account</h1>
           <p className="text-body-sm text-slate">
             Start tracking tasks and habits with Klyro.

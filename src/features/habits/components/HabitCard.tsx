@@ -38,7 +38,7 @@ export function HabitCard({ habit, date, onEdit }: HabitCardProps) {
     <div className="flex flex-col gap-3 rounded-[24px] border border-mist bg-snow p-6 shadow-[var(--shadow-card)]">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <h3 className="truncate text-body font-medium text-ink">{habit.title}</h3>
+          <h3 className="break-words text-body font-medium text-ink">{habit.title}</h3>
           <p className="mt-1 flex items-center gap-1 text-caption text-slate">
             <Flame size={14} className="text-apricot" />
             {habit.streak_count} day streak
@@ -88,7 +88,7 @@ export function HabitCard({ habit, date, onEdit }: HabitCardProps) {
         disabled={checkIn.isPending}
         aria-pressed={habit.completed}
         className={cn(
-          'rounded-full px-5 py-2.5 text-body-sm font-medium transition-opacity',
+          'w-full rounded-full px-5 py-2.5 text-body-sm font-medium transition-opacity',
           'disabled:cursor-not-allowed disabled:opacity-60',
           habit.completed
             ? 'bg-mint text-ink hover:opacity-90'

@@ -34,14 +34,14 @@ export function TasksPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <header className="flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <h1 className="text-heading-sm font-medium text-ink">Tasks</h1>
+      <header className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+        <div className="min-w-0">
+          <h1 className="break-words text-heading-sm font-medium text-ink">Tasks</h1>
           <p className="mt-1 text-body-sm text-slate">
             Plan, prioritise and track what needs doing.
           </p>
         </div>
-        <Button onClick={openCreate}>
+        <Button onClick={openCreate} className="w-full sm:w-auto">
           <Plus size={16} />
           New Task
         </Button>
@@ -62,7 +62,7 @@ export function TasksPage() {
           Could not load tasks. {query.error?.message}
         </p>
       ) : (
-        <TaskBoard tasks={query.data?.tasks ?? []} onEdit={openEdit} />
+        <TaskBoard tasks={query.data?.tasks ?? []} onEdit={openEdit} onCreate={openCreate} />
       )}
 
       <TaskFormModal open={modalOpen} onClose={() => setModalOpen(false)} task={editing} />

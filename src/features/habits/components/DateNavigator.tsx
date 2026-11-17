@@ -10,7 +10,7 @@ export function DateNavigator({ value, onChange }: DateNavigatorProps) {
   const today = toDateKey();
 
   return (
-    <div className="flex flex-wrap items-center gap-3 rounded-[24px] border border-mist bg-snow p-4 shadow-[var(--shadow-card)]">
+    <div className="flex flex-wrap items-center justify-center gap-3 rounded-[24px] border border-mist bg-snow p-4 shadow-[var(--shadow-card)] sm:justify-start">
       <button
         type="button"
         onClick={() => onChange(shiftDateKey(value, -1))}
@@ -20,11 +20,11 @@ export function DateNavigator({ value, onChange }: DateNavigatorProps) {
         <ChevronLeft size={18} />
       </button>
 
-      <div className="flex flex-col items-center">
+      <div className="flex min-w-[140px] flex-col items-center">
         <span className="rounded-[6px] bg-periwinkle-wash px-3 py-1 text-body-sm font-medium text-ink">
           {value}
         </span>
-        <span className="mt-1 text-caption text-slate">{formatLongDate(value)}</span>
+        <span className="mt-1 text-center text-caption text-slate">{formatLongDate(value)}</span>
       </div>
 
       <button
