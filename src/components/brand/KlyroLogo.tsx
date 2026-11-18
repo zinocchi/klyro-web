@@ -1,5 +1,5 @@
-import iconSrc from '../../assets/KLYRO BRAND PACK/ICON.svg';
-import logoSrc from '../../assets/KLYRO BRAND PACK/logo-h.svg';
+import iconSrc from '../../assets/KLYRO-BRAND-PACK/ICON.svg';
+import logoSrc from '../../assets/KLYRO-BRAND-PACK/logo-h.svg';
 
 export interface KlyroIconProps {
   size?: number;
