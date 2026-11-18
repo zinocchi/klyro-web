@@ -22,7 +22,7 @@ export function RegisterPage() {
     formState: { errors },
   } = useForm<RegisterInput>({
     resolver: zodResolver(registerSchema),
-    defaultValues: { email: '', password: '' },
+    defaultValues: { name: '', email: '', password: '' },
   });
 
   const mutation = useMutation({
@@ -35,7 +35,7 @@ export function RegisterPage() {
     onError: (error) => {
       if (error instanceof ApiError) {
         for (const field of error.fieldErrors) {
-          if (field.field === 'email' || field.field === 'password') {
+          if (field.field === 'name' || field.field === 'email' || field.field === 'password') {
             setError(field.field, { message: field.message });
           }
         }
@@ -60,6 +60,14 @@ export function RegisterPage() {
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} noValidate className="flex flex-col gap-4">
+          <Input
+            type="text"
+            autoComplete="name"
+            placeholder="Fikri"
+            label="Name"
+            error={errors.name?.message}
+            {...register('name')}
+          />
           <Input
             type="email"
             autoComplete="email"

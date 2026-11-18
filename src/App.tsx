@@ -10,6 +10,7 @@ import { RegisterPage } from './features/auth/pages/RegisterPage';
 import { DashboardPage } from './features/dashboard/pages/DashboardPage';
 import { HabitsPage } from './features/habits/pages/HabitsPage';
 import { TasksPage } from './features/tasks/pages/TasksPage';
+import { MoneyPage, NotesPage } from './pages/PlaceholderPages';
 
 function App() {
   return (
@@ -42,6 +43,8 @@ function App() {
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/tasks" element={<TasksPage />} />
             <Route path="/habits" element={<HabitsPage />} />
+            <Route path="/money" element={<MoneyPage />} />
+            <Route path="/notes" element={<NotesPage />} />
           </Route>
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
           <Route path="*" element={<Navigate to="/dashboard" replace />} />

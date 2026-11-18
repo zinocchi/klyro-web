@@ -9,12 +9,19 @@ const password = z
   .min(8, 'Password must be at least 8 characters')
   .max(72, 'Password is too long');
 
+const name = z
+  .string()
+  .trim()
+  .min(2, 'Name must be at least 2 characters')
+  .max(100, 'Name is too long');
+
 export const loginSchema = z.object({
   email,
   password,
 });
 
 export const registerSchema = z.object({
+  name,
   email,
   password,
 });

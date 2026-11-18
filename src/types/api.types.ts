@@ -1,8 +1,9 @@
-// Shapes mirroring API.md (klyro-backend v1).
+// Shapes mirroring API.md (klyro-backend v1) — Klyro Personal Life OS.
 
 export type TaskStatus = 'PENDING' | 'IN_PROGRESS' | 'COMPLETED';
 export type TaskPriority = 'LOW' | 'MEDIUM' | 'HIGH';
 export type TargetDay = 'MON' | 'TUE' | 'WED' | 'THU' | 'FRI' | 'SAT' | 'SUN';
+export type TransactionType = 'INCOME' | 'EXPENSE';
 
 export const TASK_STATUSES: TaskStatus[] = ['PENDING', 'IN_PROGRESS', 'COMPLETED'];
 export const TASK_PRIORITIES: TaskPriority[] = ['LOW', 'MEDIUM', 'HIGH'];
@@ -15,6 +16,7 @@ export const TARGET_DAYS: TargetDay[] = [
   'SAT',
   'SUN',
 ];
+export const TRANSACTION_TYPES: TransactionType[] = ['INCOME', 'EXPENSE'];
 
 /* ---------- Envelope ---------- */
 
@@ -42,6 +44,7 @@ export type ApiResponse<T> = ApiSuccess<T> | ApiFailure;
 export interface User {
   id: string;
   email: string;
+  name: string;
   created_at: string;
 }
 
@@ -72,9 +75,40 @@ export interface HabitLog {
   completed: boolean;
 }
 
+export interface Transaction {
+  id: string;
+  user_id: string;
+  type: TransactionType;
+  /** Integer rupiah, no decimals. */
+  amount: number;
+  category: string;
+  note: string | null;
+  date: string;
+  created_at: string;
+}
+
+export interface TransactionSummary {
+  /** `YYYY-MM` */
+  month: string;
+  total_income: number;
+  total_expense: number;
+  balance: number;
+}
+
+export interface Note {
+  id: string;
+  user_id: string;
+  title: string;
+  content: string;
+  is_pinned: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
 /* ---------- Requests ---------- */
 
 export interface RegisterRequest {
+  name: string;
   email: string;
   password: string;
 }
@@ -124,6 +158,51 @@ export interface CheckInRequest {
   date: string;
 }
 
+export interface CreateTransactionRequest {
+  type: TransactionType;
+  amount: number;
+  category: string;
+  note?: string;
+  date?: string;
+}
+
+export interface UpdateTransactionRequest {
+  type?: TransactionType;
+  amount?: number;
+  category?: string;
+  note?: string;
+  date?: string;
+}
+
+export interface TransactionQueryParams {
+  type?: TransactionType;
+  category?: string;
+  /** `YYYY-MM` */
+  month?: string;
+}
+
+export interface TransactionSummaryQueryParams {
+  /** `YYYY-MM` — defaults to the current month server-side. */
+  month?: string;
+}
+
+export interface CreateNoteRequest {
+  title: string;
+  content: string;
+  is_pinned?: boolean;
+}
+
+export interface UpdateNoteRequest {
+  title?: string;
+  content?: string;
+  is_pinned?: boolean;
+}
+
+export interface NoteQueryParams {
+  is_pinned?: boolean;
+  search?: string;
+}
+
 /* ---------- Response payloads ---------- */
 
 export interface AuthData {
@@ -154,6 +233,26 @@ export interface HabitData {
 export interface CheckInData {
   habit: Habit;
   log: HabitLog;
+}
+
+export interface TransactionsData {
+  transactions: Transaction[];
+}
+
+export interface TransactionData {
+  transaction: Transaction;
+}
+
+export interface TransactionSummaryData {
+  summary: TransactionSummary;
+}
+
+export interface NotesData {
+  notes: Note[];
+}
+
+export interface NoteData {
+  note: Note;
 }
 
 export interface DeletedData {

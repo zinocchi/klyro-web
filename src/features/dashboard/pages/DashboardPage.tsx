@@ -83,7 +83,7 @@ export function DashboardPage() {
       <header className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <h1 className="break-words text-heading-sm font-medium text-ink">
-            Hello{user?.email ? `, ${user.email}` : ''}
+            {user?.name ? `Halo, ${user.name}` : 'Halo'}
           </h1>
           <p className="mt-1 break-words text-body-sm text-slate">{formatLongDate(today)}</p>
         </div>
