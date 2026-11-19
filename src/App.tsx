@@ -9,8 +9,9 @@ import { LoginPage } from './features/auth/pages/LoginPage';
 import { RegisterPage } from './features/auth/pages/RegisterPage';
 import { DashboardPage } from './features/dashboard/pages/DashboardPage';
 import { HabitsPage } from './features/habits/pages/HabitsPage';
+import { MoneyPage } from './features/money/pages/MoneyPage';
+import { NotesPage } from './features/notes/pages/NotesPage';
 import { TasksPage } from './features/tasks/pages/TasksPage';
-import { MoneyPage, NotesPage } from './pages/PlaceholderPages';
 
 function App() {
   return (
