@@ -1,5 +1,7 @@
+import { useState } from 'react';
 import { Flame, Pencil, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { ConfirmModal } from '../../../components/ui/ConfirmModal';
 import { cn } from '../../../lib/utils';
 import type { Habit } from '../../../types/api.types';
 import { useCheckInHabit, useDeleteHabit } from '../hooks/useHabits';
@@ -12,6 +14,7 @@ export interface HabitCardProps {
 }
 
 export function HabitCard({ habit, date, onEdit }: HabitCardProps) {
+  const [confirmOpen, setConfirmOpen] = useState(false);
   const checkIn = useCheckInHabit();
   const remove = useDeleteHabit();
 
@@ -20,17 +23,19 @@ export function HabitCard({ habit, date, onEdit }: HabitCardProps) {
       { id: habit.id, date },
       {
         onSuccess: () =>
-          toast.success(habit.completed ? 'Check-in removed' : 'Checked in. Nice work!'),
-        onError: () => toast.error('Could not update the check-in'),
+          toast.success(habit.completed ? 'Check-in dibatalkan' : 'Berhasil check-in. Mantap!'),
+        onError: () => toast.error('Gagal memperbarui check-in'),
       },
     );
   };
 
   const handleDelete = () => {
-    if (!window.confirm(`Delete "${habit.title}"?`)) return;
     remove.mutate(habit.id, {
-      onSuccess: () => toast.success('Habit deleted'),
-      onError: () => toast.error('Could not delete the habit'),
+      onSuccess: () => {
+        setConfirmOpen(false);
+        toast.success('Habit dihapus');
+      },
+      onError: () => toast.error('Gagal menghapus habit'),
     });
   };
 
@@ -56,9 +61,9 @@ export function HabitCard({ habit, date, onEdit }: HabitCardProps) {
           </button>
           <button
             type="button"
-            onClick={handleDelete}
+            onClick={() => setConfirmOpen(true)}
             aria-label={`Delete ${habit.title}`}
-            className="rounded-full p-2 text-slate transition-colors hover:bg-cloud hover:text-[#e05c5c]"
+            className="rounded-full p-2 text-slate transition-colors hover:bg-cloud hover:text-[#e2445c]"
           >
             <Trash2 size={16} />
           </button>
@@ -97,6 +102,15 @@ export function HabitCard({ habit, date, onEdit }: HabitCardProps) {
       >
         {habit.completed ? 'Checked in' : 'Check in'}
       </button>
+
+      <ConfirmModal
+        isOpen={confirmOpen}
+        onClose={() => setConfirmOpen(false)}
+        onConfirm={handleDelete}
+        title="Hapus habit?"
+        description={`"${habit.title}" beserta riwayat check-in-nya akan dihapus permanen.`}
+        isLoading={remove.isPending}
+      />
     </div>
   );
 }

@@ -29,7 +29,9 @@ export function RegisterPage() {
     mutationFn: registerUser,
     onSuccess: (data) => {
       setAuth(data.token, data.user);
-      toast.success('Account created. Welcome to Klyro!');
+      toast.success(
+        data.user.name ? `Akun dibuat. Selamat bergabung, ${data.user.name}!` : 'Akun berhasil dibuat!',
+      );
       navigate('/dashboard', { replace: true });
     },
     onError: (error) => {
@@ -42,7 +44,7 @@ export function RegisterPage() {
         toast.error(error.message);
         return;
       }
-      toast.error('Unable to create your account. Please try again.');
+      toast.error('Gagal membuat akun. Coba lagi sebentar lagi.');
     },
   });
 

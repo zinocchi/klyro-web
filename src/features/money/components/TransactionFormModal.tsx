@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm, useWatch } from 'react-hook-form';
+import { Controller, useForm, useWatch } from 'react-hook-form';
 import { toast } from 'sonner';
 import { Button } from '../../../components/ui/Button';
+import { DatePicker } from '../../../components/ui/DatePicker';
 import { Input } from '../../../components/ui/Input';
 import { Modal } from '../../../components/ui/Modal';
 import { ApiError } from '../../../lib/api';
@@ -199,7 +200,20 @@ function TransactionForm({
         {...register('note')}
       />
 
-      <Input label="Tanggal" type="date" error={errors.date?.message} {...register('date')} />
+      <Controller
+        control={control}
+        name="date"
+        render={({ field }) => (
+          <DatePicker
+            label="Tanggal"
+            placeholder="Pilih tanggal"
+            clearable
+            value={field.value ?? ''}
+            onChange={field.onChange}
+            error={errors.date?.message}
+          />
+        )}
+      />
 
       <div className="mt-2 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
         <Button

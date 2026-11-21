@@ -29,7 +29,9 @@ export function LoginPage() {
     mutationFn: login,
     onSuccess: (data) => {
       setAuth(data.token, data.user);
-      toast.success(`Welcome back, ${data.user.email}`);
+      toast.success(
+        data.user.name ? `Selamat datang kembali, ${data.user.name}!` : 'Berhasil masuk!',
+      );
       navigate('/dashboard', { replace: true });
     },
     onError: (error) => {
@@ -42,7 +44,7 @@ export function LoginPage() {
         toast.error(error.message);
         return;
       }
-      toast.error('Unable to sign in. Please try again.');
+      toast.error('Gagal masuk. Periksa email dan password kamu.');
     },
   });
 

@@ -70,8 +70,8 @@ export function DashboardPage() {
       { id: habitId, date: today },
       {
         onSuccess: () =>
-          toast.success(completed ? 'Check-in removed' : 'Checked in. Nice work!'),
-        onError: () => toast.error('Could not update the check-in'),
+          toast.success(completed ? 'Check-in dibatalkan' : 'Berhasil check-in. Mantap!'),
+        onError: () => toast.error('Gagal memperbarui check-in'),
       },
     );
   };

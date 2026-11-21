@@ -1,5 +1,7 @@
+import { useState } from 'react';
 import { Pin, PinOff, Pencil, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { ConfirmModal } from '../../../components/ui/ConfirmModal';
 import { cn, formatDate } from '../../../lib/utils';
 import type { Note } from '../../../types/api.types';
 import { useDeleteNote, useUpdateNote } from '../hooks/useNotes';
@@ -10,6 +12,7 @@ export interface NoteCardProps {
 }
 
 export function NoteCard({ note, onEdit }: NoteCardProps) {
+  const [confirmOpen, setConfirmOpen] = useState(false);
   const updateMutation = useUpdateNote();
   const deleteMutation = useDeleteNote();
 
@@ -24,9 +27,11 @@ export function NoteCard({ note, onEdit }: NoteCardProps) {
   };
 
   const handleDelete = () => {
-    if (!window.confirm(`Hapus catatan "${note.title}"?`)) return;
     deleteMutation.mutate(note.id, {
-      onSuccess: () => toast.success('Catatan dihapus'),
+      onSuccess: () => {
+        setConfirmOpen(false);
+        toast.success('Catatan dihapus');
+      },
       onError: () => toast.error('Gagal menghapus catatan'),
     });
   };
@@ -74,14 +79,23 @@ export function NoteCard({ note, onEdit }: NoteCardProps) {
           </button>
           <button
             type="button"
-            onClick={handleDelete}
+            onClick={() => setConfirmOpen(true)}
             aria-label={`Delete ${note.title}`}
-            className="rounded-full p-2 text-slate transition-colors hover:bg-cloud hover:text-[#e05c5c]"
+            className="rounded-full p-2 text-slate transition-colors hover:bg-cloud hover:text-[#e2445c]"
           >
             <Trash2 size={16} />
           </button>
         </div>
       </div>
+
+      <ConfirmModal
+        isOpen={confirmOpen}
+        onClose={() => setConfirmOpen(false)}
+        onConfirm={handleDelete}
+        title="Hapus catatan?"
+        description={`"${note.title}" akan dihapus permanen.`}
+        isLoading={deleteMutation.isPending}
+      />
     </article>
   );
 }

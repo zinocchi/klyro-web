@@ -11,6 +11,7 @@ import {
   X,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { ConfirmModal } from '../ui/ConfirmModal';
 import { useAuthStore } from '../../stores/authStore';
 import { cn } from '../../lib/utils';
 import { KlyroIcon, KlyroLogo } from '../brand/KlyroLogo';
@@ -25,6 +26,7 @@ const NAV_ITEMS = [
 
 export function AppLayout() {
   const [open, setOpen] = useState(false);
+  const [logoutOpen, setLogoutOpen] = useState(false);
   const navigate = useNavigate();
   const user = useAuthStore((s) => s.user);
   const logout = useAuthStore((s) => s.logout);
@@ -49,8 +51,9 @@ export function AppLayout() {
 
   const handleLogout = () => {
     logout();
+    setLogoutOpen(false);
     setOpen(false);
-    toast.success('Signed out');
+    toast.success('Berhasil keluar. Sampai jumpa!');
     navigate('/login', { replace: true });
   };
 
@@ -90,7 +93,7 @@ export function AppLayout() {
       </div>
       <button
         type="button"
-        onClick={handleLogout}
+        onClick={() => setLogoutOpen(true)}
         className="flex min-h-[44px] w-full items-center gap-3 rounded-[6px] px-3 py-2 text-body-sm font-medium text-slate transition-colors hover:bg-cloud hover:text-ink"
       >
         <LogOut size={18} className="shrink-0" />
@@ -164,6 +167,16 @@ export function AppLayout() {
       <main className="min-w-0 flex-1 p-4 sm:p-6 lg:p-10">
         <Outlet />
       </main>
+
+      <ConfirmModal
+        isOpen={logoutOpen}
+        onClose={() => setLogoutOpen(false)}
+        onConfirm={handleLogout}
+        title="Keluar dari Akun?"
+        description="Kamu perlu login kembali untuk mengakses datamu."
+        confirmText="Keluar"
+        variant="danger"
+      />
     </div>
   );
 }

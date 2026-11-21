@@ -1,5 +1,7 @@
+import { useState } from 'react';
 import { Pencil, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { ConfirmModal } from '../../../components/ui/ConfirmModal';
 import { cn, formatDate, formatIDR } from '../../../lib/utils';
 import type { Transaction } from '../../../types/api.types';
 import { useDeleteTransaction } from '../hooks/useTransactions';
@@ -11,18 +13,23 @@ export interface TransactionListProps {
 }
 
 export function TransactionList({ transactions, onEdit }: TransactionListProps) {
+  const [target, setTarget] = useState<Transaction | null>(null);
   const remove = useDeleteTransaction();
 
-  const handleDelete = (transaction: Transaction) => {
-    if (!window.confirm(`Hapus transaksi "${transaction.category}"?`)) return;
-    remove.mutate(transaction.id, {
-      onSuccess: () => toast.success('Transaksi dihapus'),
+  const handleDelete = () => {
+    if (!target) return;
+    remove.mutate(target.id, {
+      onSuccess: () => {
+        setTarget(null);
+        toast.success('Transaksi dihapus');
+      },
       onError: () => toast.error('Gagal menghapus transaksi'),
     });
   };
 
   return (
-    <ul className="divide-y divide-pebble rounded-[24px] border border-mist bg-snow shadow-[var(--shadow-card)]">
+    <>
+      <ul className="divide-y divide-pebble rounded-[24px] border border-mist bg-snow shadow-[var(--shadow-card)]">
       {transactions.map((transaction) => {
         const income = transaction.type === 'INCOME';
         return (
@@ -70,9 +77,9 @@ export function TransactionList({ transactions, onEdit }: TransactionListProps) 
                 </button>
                 <button
                   type="button"
-                  onClick={() => handleDelete(transaction)}
+                  onClick={() => setTarget(transaction)}
                   aria-label={`Delete ${transaction.category}`}
-                  className="rounded-full p-2 text-slate transition-colors hover:bg-snow hover:text-[#e05c5c]"
+                  className="rounded-full p-2 text-slate transition-colors hover:bg-snow hover:text-[#e2445c]"
                 >
                   <Trash2 size={16} />
                 </button>
@@ -81,6 +88,20 @@ export function TransactionList({ transactions, onEdit }: TransactionListProps) 
           </li>
         );
       })}
-    </ul>
+      </ul>
+
+      <ConfirmModal
+        isOpen={Boolean(target)}
+        onClose={() => setTarget(null)}
+        onConfirm={handleDelete}
+        title="Hapus transaksi?"
+        description={
+          target
+            ? `Transaksi "${target.category}" sebesar ${formatIDR(target.amount)} akan dihapus permanen.`
+            : undefined
+        }
+        isLoading={remove.isPending}
+      />
+    </>
   );
 }

@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { Button } from '../../../components/ui/Button';
+import { DatePicker } from '../../../components/ui/DatePicker';
 import { Input } from '../../../components/ui/Input';
 import { Modal } from '../../../components/ui/Modal';
 import { Select } from '../../../components/ui/Select';
@@ -44,6 +45,7 @@ function TaskForm({ task, onClose }: { task?: Task | null; onClose: () => void }
     register,
     handleSubmit,
     setError,
+    control,
     formState: { errors },
   } = useForm<TaskFormValues>({
     resolver: zodResolver(taskFormSchema),
@@ -79,8 +81,8 @@ function TaskForm({ task, onClose }: { task?: Task | null; onClose: () => void }
         toast.error(error.message);
         return;
       }
-      setFormError('Something went wrong');
-      toast.error('Something went wrong');
+      setFormError('Terjadi kesalahan. Coba lagi.');
+      toast.error('Terjadi kesalahan. Coba lagi.');
     };
 
     if (task) {
@@ -88,7 +90,7 @@ function TaskForm({ task, onClose }: { task?: Task | null; onClose: () => void }
         { id: task.id, payload },
         {
           onSuccess: () => {
-            toast.success('Task updated');
+            toast.success('Task diperbarui');
             onClose();
           },
           onError,
@@ -99,7 +101,7 @@ function TaskForm({ task, onClose }: { task?: Task | null; onClose: () => void }
 
     createMutation.mutate(payload, {
       onSuccess: () => {
-        toast.success('Task created');
+        toast.success('Task dibuat');
         onClose();
       },
       onError,
@@ -128,13 +130,20 @@ function TaskForm({ task, onClose }: { task?: Task | null; onClose: () => void }
         {...register('description')}
       />
 
-      <Input
-        label="Due date"
-        type="date"
-        error={errors.due_date?.message}
-        {...register('due_date')}
+      <Controller
+        control={control}
+        name="due_date"
+        render={({ field }) => (
+          <DatePicker
+            label="Due date"
+            placeholder="Pilih tanggal (opsional)"
+            clearable
+            value={field.value ?? ''}
+            onChange={field.onChange}
+            error={errors.due_date?.message}
+          />
+        )}
       />
-
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <Select label="Status" error={errors.status?.message} {...register('status')}>
           {TASK_STATUSES.map((s) => (

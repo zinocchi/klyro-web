@@ -1,5 +1,7 @@
+import { useState } from 'react';
 import { Pencil, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { ConfirmModal } from '../../../components/ui/ConfirmModal';
 import { cn, formatDate } from '../../../lib/utils';
 import { TASK_STATUSES, type Task, type TaskStatus } from '../../../types/api.types';
 import { useDeleteTask, useUpdateTask } from '../hooks/useTasks';
@@ -12,6 +14,7 @@ export interface TaskCardProps {
 }
 
 export function TaskCard({ task, onEdit }: TaskCardProps) {
+  const [confirmOpen, setConfirmOpen] = useState(false);
   const updateMutation = useUpdateTask();
   const deleteMutation = useDeleteTask();
 
@@ -20,17 +23,19 @@ export function TaskCard({ task, onEdit }: TaskCardProps) {
     updateMutation.mutate(
       { id: task.id, payload: { status } },
       {
-        onSuccess: () => toast.success('Task status updated'),
-        onError: () => toast.error('Could not update the task'),
+        onSuccess: () => toast.success('Status task diperbarui'),
+        onError: () => toast.error('Gagal memperbarui task'),
       },
     );
   };
 
   const handleDelete = () => {
-    if (!window.confirm(`Delete "${task.title}"?`)) return;
     deleteMutation.mutate(task.id, {
-      onSuccess: () => toast.success('Task deleted'),
-      onError: () => toast.error('Could not delete the task'),
+      onSuccess: () => {
+        setConfirmOpen(false);
+        toast.success('Task dihapus');
+      },
+      onError: () => toast.error('Gagal menghapus task'),
     });
   };
 
@@ -85,13 +90,22 @@ export function TaskCard({ task, onEdit }: TaskCardProps) {
 
         <button
           type="button"
-          onClick={handleDelete}
+          onClick={() => setConfirmOpen(true)}
           aria-label={`Delete ${task.title}`}
-          className="rounded-full p-2 text-slate transition-colors hover:bg-cloud hover:text-[#e05c5c]"
+          className="rounded-full p-2 text-slate transition-colors hover:bg-cloud hover:text-[#e2445c]"
         >
           <Trash2 size={16} />
         </button>
       </div>
+
+      <ConfirmModal
+        isOpen={confirmOpen}
+        onClose={() => setConfirmOpen(false)}
+        onConfirm={handleDelete}
+        title="Hapus task?"
+        description={`"${task.title}" akan dihapus permanen.`}
+        isLoading={deleteMutation.isPending}
+      />
     </div>
   );
 }

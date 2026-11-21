@@ -15,7 +15,7 @@ const variants: Record<Variant, string> = {
   primary: 'bg-monday-violet text-snow hover:opacity-90',
   secondary: 'border border-slate bg-transparent text-ink hover:bg-cloud',
   ghost: 'bg-transparent text-slate hover:bg-cloud',
-  danger: 'bg-[#e05c5c] text-snow hover:opacity-90',
+  danger: 'bg-[#e2445c] text-snow hover:opacity-90',
 };
 
 const sizes: Record<Size, string> = {

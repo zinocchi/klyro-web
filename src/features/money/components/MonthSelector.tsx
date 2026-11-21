@@ -1,5 +1,6 @@
 import { format } from 'date-fns';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { MonthPicker } from '../../../components/ui/DatePicker';
 import { toMonthKey } from '../../../lib/utils';
 
 export interface MonthSelectorProps {
@@ -30,16 +31,14 @@ export function MonthSelector({ value, onChange }: MonthSelectorProps) {
         <ChevronLeft size={18} />
       </button>
 
-      <label className="sr-only" htmlFor="month-selector">
-        Month
-      </label>
-      <input
-        id="month-selector"
-        type="month"
-        value={value}
-        onChange={(e) => e.target.value && onChange(e.target.value)}
-        className="min-h-[44px] rounded-[6px] border border-pebble bg-snow px-3 text-body-sm text-ink focus:border-monday-violet focus:outline-none focus:ring-1 focus:ring-monday-violet"
-      />
+      <div className="min-w-[11rem] flex-1 sm:flex-none">
+        <MonthPicker
+          value={value}
+          onChange={onChange}
+          placeholder="Pilih bulan"
+          align="end"
+        />
+      </div>
 
       <button
         type="button"

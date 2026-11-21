@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { SlidersHorizontal } from 'lucide-react';
 import { Button } from '../../../components/ui/Button';
 import { Select } from '../../../components/ui/Select';
-import { Input } from '../../../components/ui/Input';
+import { DatePicker } from '../../../components/ui/DatePicker';
 import { cn } from '../../../lib/utils';
 import { TASK_PRIORITIES, TASK_STATUSES } from '../../../types/api.types';
 import { PRIORITY_LABEL, STATUS_LABEL } from '../taskLabels';
@@ -61,11 +61,12 @@ export function TaskFilters({ value, onChange, onReset }: TaskFiltersProps) {
       </div>
 
       <div>
-        <Input
+        <DatePicker
           label="Due date"
-          type="date"
+          placeholder="Semua tanggal"
+          clearable
           value={value.due_date ?? ''}
-          onChange={(e) => onChange({ ...value, due_date: e.target.value })}
+          onChange={(due_date) => onChange({ ...value, due_date })}
         />
       </div>
 

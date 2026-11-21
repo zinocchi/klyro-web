@@ -1,4 +1,5 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { DatePicker } from '../../../components/ui/DatePicker';
 import { cn, formatLongDate, isToday, shiftDateKey, toDateKey } from '../../../lib/utils';
 
 export interface DateNavigatorProps {
@@ -20,11 +21,13 @@ export function DateNavigator({ value, onChange }: DateNavigatorProps) {
         <ChevronLeft size={18} />
       </button>
 
-      <div className="flex min-w-[140px] flex-col items-center">
-        <span className="rounded-[6px] bg-periwinkle-wash px-3 py-1 text-body-sm font-medium text-ink">
-          {value}
-        </span>
-        <span className="mt-1 text-center text-caption text-slate">{formatLongDate(value)}</span>
+      <div className="min-w-[12rem] flex-1 sm:flex-none">
+        <DatePicker
+          value={value}
+          onChange={(date) => date && onChange(date)}
+          placeholder="Pilih tanggal"
+        />
+        <p className="mt-1 text-caption text-slate">{formatLongDate(value)}</p>
       </div>
 
       <button

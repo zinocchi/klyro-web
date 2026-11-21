@@ -73,8 +73,8 @@ function HabitForm({ habit, onClose }: { habit?: Habit | null; onClose: () => vo
         toast.error(error.message);
         return;
       }
-      setFormError('Something went wrong');
-      toast.error('Something went wrong');
+      setFormError('Terjadi kesalahan. Coba lagi.');
+      toast.error('Terjadi kesalahan. Coba lagi.');
     };
 
     if (habit) {
@@ -82,7 +82,7 @@ function HabitForm({ habit, onClose }: { habit?: Habit | null; onClose: () => vo
         { id: habit.id, payload: { title: values.title, target_days: values.target_days } },
         {
           onSuccess: () => {
-            toast.success('Habit updated');
+            toast.success('Habit diperbarui');
             onClose();
           },
           onError,
@@ -95,7 +95,7 @@ function HabitForm({ habit, onClose }: { habit?: Habit | null; onClose: () => vo
       { title: values.title, target_days: values.target_days },
       {
         onSuccess: () => {
-          toast.success('Habit created');
+          toast.success('Habit dibuat');
           onClose();
         },
         onError,

@@ -51,7 +51,34 @@ function App() {
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
       </BrowserRouter>
-      <Toaster richColors position="top-right" />
+      <Toaster
+        position="top-right"
+        richColors
+        closeButton
+        gap={12}
+        offset={16}
+        toastOptions={{
+          duration: 4000,
+          style: {
+            fontFamily: 'var(--font-poppins)',
+            fontSize: 'var(--text-body-sm)',
+            borderRadius: '16px',
+            border: '1px solid var(--color-mist)',
+            boxShadow: 'var(--shadow-card)',
+            background: 'var(--color-snow)',
+            color: 'var(--color-ink)',
+            padding: '14px 16px',
+          },
+          classNames: {
+            toast: 'items-start',
+            title: 'font-medium',
+            description: 'text-slate',
+            actionButton: 'rounded-full bg-monday-violet text-snow',
+            cancelButton: 'rounded-full bg-cloud text-slate',
+            closeButton: 'border-mist bg-snow text-slate',
+          },
+        }}
+      />
     </QueryClientProvider>
   );
 }
