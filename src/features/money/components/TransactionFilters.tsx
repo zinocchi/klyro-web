@@ -1,14 +1,20 @@
+import { useTranslation } from 'react-i18next';
 import { Button } from '../../../components/ui/Button';
 import { Input } from '../../../components/ui/Input';
 import { Select } from '../../../components/ui/Select';
 import { TYPE_LABEL } from '../moneyLabels';
-import type { TransactionFilterValues } from '../schemas/transaction.schema';
 import type { TransactionType } from '../../../types/api.types';
 
+export interface TransactionFiltersValue {
+  type?: TransactionType;
+  category: string;
+  search: string;
+}
+
 export interface TransactionFiltersProps {
-  value: Pick<TransactionFilterValues, 'type' | 'category'>;
+  value: TransactionFiltersValue;
   categories: string[];
-  onChange: (value: Pick<TransactionFilterValues, 'type' | 'category'>) => void;
+  onChange: (value: TransactionFiltersValue) => void;
   onReset: () => void;
 }
 
@@ -18,10 +24,19 @@ export function TransactionFilters({
   onChange,
   onReset,
 }: TransactionFiltersProps) {
-  const hasFilters = Boolean(value.type || value.category);
+  const { t } = useTranslation();
+  const hasFilters = Boolean(value.type || value.category || value.search);
 
   return (
-    <div className="grid grid-cols-1 gap-3 rounded-[24px] border border-mist bg-snow p-4 shadow-[var(--shadow-card)] sm:grid-cols-2 lg:grid-cols-[1fr_1fr_auto] lg:items-end">
+    <div className="grid grid-cols-1 gap-3 rounded-[24px] border border-mist bg-snow p-4 shadow-[var(--shadow-card)] sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_auto] lg:items-end">
+      <Input
+        type="search"
+        label={t('money.search')}
+        placeholder={t('money.searchPlaceholder')}
+        value={value.search}
+        onChange={(e) => onChange({ ...value, search: e.target.value })}
+      />
+
       <Select
         label="Tipe"
         value={value.type ?? ''}

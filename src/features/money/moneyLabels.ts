@@ -19,3 +19,29 @@ export const CATEGORY_PRESETS: Record<TransactionType, string[]> = {
   INCOME: INCOME_CATEGORIES,
   EXPENSE: EXPENSE_CATEGORIES,
 };
+
+/** Budget usage colour coding: <80% mint, 80–99% apricot, ≥100% red. */
+export function budgetTone(percent: number): {
+  bar: string;
+  text: string;
+  badge: string;
+  status: 'safe' | 'warning' | 'over';
+} {
+  if (percent >= 100) {
+    return {
+      bar: 'bg-[#e2445c]',
+      text: 'text-[#e2445c]',
+      badge: 'bg-[#ffd4d4] text-[#c2410c]',
+      status: 'over',
+    };
+  }
+  if (percent >= 80) {
+    return {
+      bar: 'bg-apricot',
+      text: 'text-[#c2410c]',
+      badge: 'bg-apricot text-ink',
+      status: 'warning',
+    };
+  }
+  return { bar: 'bg-mint', text: 'text-[#2a5c4e]', badge: 'bg-mint text-ink', status: 'safe' };
+}

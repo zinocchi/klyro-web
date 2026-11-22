@@ -40,7 +40,14 @@
   "dashboard": {
     "title": "Command Center",
     "subtitle": "Ringkasan harian kehidupanmu.",
-    "loadError": "Gagal memuat dashboard."
+    "loadError": "Gagal memuat dashboard.",
+    "finance": {
+      "title": "Keuangan Bulan Ini",
+      "balance": "Sisa saldo",
+      "expense": "Pengeluaran",
+      "budgetUsed": "{{percent}}% budget terpakai",
+      "view": "Lihat Money"
+    }
   },
   "tasks": {
     "title": "Tasks",
@@ -64,7 +71,32 @@
     "empty": "Belum ada transaksi",
     "emptyDescription": "Tambahkan pemasukan atau pengeluaran pertama bulan ini.",
     "newTransaction": "Transaksi",
-    "loadError": "Gagal memuat transaksi."
+    "loadError": "Gagal memuat transaksi.",
+    "search": "Cari transaksi",
+    "searchPlaceholder": "Cari catatan atau kategori",
+    "noMatch": "Tidak ada transaksi yang cocok dengan filtermu.",
+    "export": "Export CSV",
+    "budget": {
+      "title": "Budget Bulanan",
+      "unsetTitle": "Budget bulanan belum diatur",
+      "unsetDescription": "Pasang batas pengeluaran bulanan agar Klyro bisa mengawal jajanmu.",
+      "setBudget": "Atur budget",
+      "usedOf": "dari {{amount}}",
+      "remaining": "Sisa budget",
+      "over": "Lewat budget",
+      "dailySafe": "Aman jajan/hari",
+      "dailySafeHint": "Sisa {{days}} hari bulan ini",
+      "status": {
+        "safe": "Aman",
+        "warning": "Hampir habis",
+        "over": "Lewat budget"
+      }
+    },
+    "categories": {
+      "title": "Pengeluaran per Kategori",
+      "empty": "Belum ada pengeluaran bulan ini.",
+      "total": "Total"
+    }
   },
   "notes": {
     "title": "Notes",

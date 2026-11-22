@@ -1,36 +1,73 @@
-import { useState } from 'react';
-import { Plus, Wallet } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import { Download, Plus, Wallet } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '../../../components/ui/Button';
 import { EmptyState } from '../../../components/ui/EmptyState';
 import { Spinner } from '../../../components/ui/Spinner';
 import { toMonthKey } from '../../../lib/utils';
 import type { Transaction } from '../../../types/api.types';
+import { BudgetTrackerCard } from '../components/BudgetTrackerCard';
+import { CategoryBreakdownCard } from '../components/CategoryBreakdownCard';
 import { MonthSelector } from '../components/MonthSelector';
 import { SummaryCards } from '../components/SummaryCards';
 import { TransactionFilters } from '../components/TransactionFilters';
 import { TransactionFormModal } from '../components/TransactionFormModal';
 import { TransactionList } from '../components/TransactionList';
 import { useTransactionSummary, useTransactions } from '../hooks/useTransactions';
+import { TYPE_LABEL } from '../moneyLabels';
+
+function downloadCsv(transactions: Transaction[], month: string) {
+  const cell = (value: string | number) => `"${String(value).replace(/"/g, '""')}"`;
+  const lines = [
+    'Tanggal,Tipe,Kategori,Nominal,Catatan',
+    ...transactions.map((tx) =>
+      [tx.date.slice(0, 10), TYPE_LABEL[tx.type], tx.category, tx.amount, tx.note ?? '']
+        .map(cell)
+        .join(','),
+    ),
+  ];
+  const blob = new Blob([`\ufeff${lines.join('\r\n')}`], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `klyro-transaksi-${month}.csv`;
+  link.click();
+  URL.revokeObjectURL(url);
+}
 
 export function MoneyPage() {
+  const { t } = useTranslation();
   const [month, setMonth] = useState(toMonthKey());
   const [type, setType] = useState<'' | 'INCOME' | 'EXPENSE'>('');
   const [category, setCategory] = useState('');
+  const [search, setSearch] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState<Transaction | null>(null);
 
-  const listQuery = useTransactions({
-    month,
-    type: type || undefined,
-    category: category.trim() || undefined,
-  });
+  // One request per month; type/category/search filtering stays client-side so the
+  // category breakdown always reflects the whole month.
+  const listQuery = useTransactions({ month });
   const summaryQuery = useTransactionSummary(month);
 
-  const transactions = listQuery.data?.transactions ?? [];
+  const monthTransactions = useMemo(
+    () => listQuery.data?.transactions ?? [],
+    [listQuery.data],
+  );
+
+  const transactions = useMemo(() => {
+    const term = search.trim().toLowerCase();
+    const categoryTerm = category.trim().toLowerCase();
+    return monthTransactions.filter((tx) => {
+      if (type && tx.type !== type) return false;
+      if (categoryTerm && !tx.category.toLowerCase().includes(categoryTerm)) return false;
+      if (term && !`${tx.category} ${tx.note ?? ''}`.toLowerCase().includes(term)) return false;
+      return true;
+    });
+  }, [monthTransactions, type, category, search]);
 
   // Offer every category the user has used this month as filter suggestions.
   const knownCategories = (() => {
-    const unique = new Set(transactions.map((t) => t.category));
+    const unique = new Set(monthTransactions.map((t) => t.category));
     return Array.from(unique).sort();
   })();
 
@@ -53,26 +90,47 @@ export function MoneyPage() {
             Catat pemasukan dan pengeluaran bulan ini.
           </p>
         </div>
-        <Button onClick={openCreate} className="w-full sm:w-auto">
-          <Plus size={16} />
-          Transaksi
-        </Button>
+        <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
+          <Button
+            variant="secondary"
+            onClick={() => downloadCsv(transactions, month)}
+            disabled={transactions.length === 0}
+            className="w-full sm:w-auto"
+          >
+            <Download size={16} />
+            {t('money.export')}
+          </Button>
+          <Button onClick={openCreate} className="w-full sm:w-auto">
+            <Plus size={16} />
+            Transaksi
+          </Button>
+        </div>
       </header>
 
       <MonthSelector value={month} onChange={setMonth} />
 
       <SummaryCards summary={summaryQuery.data?.summary} isLoading={summaryQuery.isPending} />
 
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <BudgetTrackerCard
+          month={month}
+          totalExpense={summaryQuery.data?.summary.total_expense ?? 0}
+        />
+        <CategoryBreakdownCard transactions={monthTransactions} />
+      </div>
+
       <TransactionFilters
-        value={{ type: type || undefined, category }}
+        value={{ type: type || undefined, category, search }}
         categories={knownCategories}
         onChange={(next) => {
           setType(next.type ?? '');
-          setCategory(next.category ?? '');
+          setCategory(next.category);
+          setSearch(next.search);
         }}
         onReset={() => {
           setType('');
           setCategory('');
+          setSearch('');
         }}
       />
 
@@ -83,6 +141,10 @@ export function MoneyPage() {
       ) : listQuery.isError ? (
         <p className="rounded-[24px] border border-mist bg-snow p-8 text-center text-body-sm text-[#e05c5c]">
           Gagal memuat transaksi. {listQuery.error?.message}
+        </p>
+      ) : transactions.length === 0 && monthTransactions.length > 0 ? (
+        <p className="rounded-[24px] border border-mist bg-snow p-8 text-center text-body-sm text-slate">
+          {t('money.noMatch')}
         </p>
       ) : transactions.length === 0 ? (
         <EmptyState

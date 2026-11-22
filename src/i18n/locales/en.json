@@ -40,7 +40,14 @@
   "dashboard": {
     "title": "Command Center",
     "subtitle": "Your daily life at a glance.",
-    "loadError": "Could not load the dashboard."
+    "loadError": "Could not load the dashboard.",
+    "finance": {
+      "title": "This Month's Money",
+      "balance": "Balance",
+      "expense": "Spent",
+      "budgetUsed": "{{percent}}% of budget used",
+      "view": "Open Money"
+    }
   },
   "tasks": {
     "title": "Tasks",
@@ -64,7 +71,32 @@
     "empty": "No transactions yet",
     "emptyDescription": "Add your first income or expense for this month.",
     "newTransaction": "Transaction",
-    "loadError": "Could not load transactions."
+    "loadError": "Could not load transactions.",
+    "search": "Search transactions",
+    "searchPlaceholder": "Search note or category",
+    "noMatch": "No transactions match your filters.",
+    "export": "Export CSV",
+    "budget": {
+      "title": "Monthly Budget",
+      "unsetTitle": "No monthly budget yet",
+      "unsetDescription": "Set a monthly spending limit so Klyro can keep your wallet in check.",
+      "setBudget": "Set budget",
+      "usedOf": "of {{amount}}",
+      "remaining": "Budget left",
+      "over": "Over budget",
+      "dailySafe": "Safe to spend/day",
+      "dailySafeHint": "{{days}} days left this month",
+      "status": {
+        "safe": "On track",
+        "warning": "Running low",
+        "over": "Over budget"
+      }
+    },
+    "categories": {
+      "title": "Spending by Category",
+      "empty": "No expenses this month yet.",
+      "total": "Total"
+    }
   },
   "notes": {
     "title": "Notes",

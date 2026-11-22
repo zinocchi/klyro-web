@@ -6,9 +6,12 @@ import { Button } from '../../../components/ui/Button';
 import { Card } from '../../../components/ui/Card';
 import { EmptyState } from '../../../components/ui/EmptyState';
 import { Spinner } from '../../../components/ui/Spinner';
-import { cn, formatLongDate, toDateKey } from '../../../lib/utils';
+import { useTranslation } from 'react-i18next';
+import { cn, formatIDR, formatLongDate, toDateKey, toMonthKey } from '../../../lib/utils';
 import { useAuthStore } from '../../../stores/authStore';
 import { useHabits, useCheckInHabit } from '../../habits/hooks/useHabits';
+import { budgetTone } from '../../money/moneyLabels';
+import { useTransactionSummary } from '../../money/hooks/useTransactions';
 import { HabitFormModal } from '../../habits/components/HabitFormModal';
 import { TaskFormModal } from '../../tasks/components/TaskFormModal';
 import { PriorityPill, StatusPill } from '../../tasks/components/taskPills';
@@ -44,14 +47,17 @@ function MetricCard({
 }
 
 export function DashboardPage() {
+  const { t } = useTranslation();
   const user = useAuthStore((s) => s.user);
   const today = toDateKey();
+  const month = toMonthKey();
 
   const [taskModalOpen, setTaskModalOpen] = useState(false);
   const [habitModalOpen, setHabitModalOpen] = useState(false);
 
   const habitsQuery = useHabits({ date: today });
   const tasksQuery = useTasks();
+  const summaryQuery = useTransactionSummary(month);
   const checkIn = useCheckInHabit();
 
   const habits = habitsQuery.data?.habits ?? [];
@@ -77,6 +83,11 @@ export function DashboardPage() {
   };
 
   const loading = habitsQuery.isPending || tasksQuery.isPending;
+
+  const summary = summaryQuery.data?.summary;
+  const budget = user?.monthly_budget ?? 0;
+  const budgetPercent = budget > 0 ? ((summary?.total_expense ?? 0) / budget) * 100 : 0;
+  const budgetStyle = budgetTone(budgetPercent);
 
   return (
     <div className="flex flex-col gap-6">
@@ -125,6 +136,57 @@ export function DashboardPage() {
           icon={<Flame size={20} />}
         />
       </div>
+
+      <Card className="p-6">
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="text-subheading font-medium text-ink">
+            {t('dashboard.finance.title')}
+          </h2>
+          <Link to="/money" className="text-body-sm font-medium text-monday-violet hover:underline">
+            {t('dashboard.finance.view')}
+          </Link>
+        </div>
+
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div>
+            <p className="text-caption text-slate">{t('dashboard.finance.balance')}</p>
+            <p className="mt-1 break-words text-subheading font-medium text-ink">
+              {summaryQuery.isPending ? '—' : formatIDR(summary?.balance ?? 0)}
+            </p>
+          </div>
+          <div>
+            <p className="text-caption text-slate">{t('dashboard.finance.expense')}</p>
+            <p className="mt-1 break-words text-subheading font-medium text-ink">
+              {summaryQuery.isPending ? '—' : formatIDR(summary?.total_expense ?? 0)}
+            </p>
+          </div>
+        </div>
+
+        {budget > 0 && (
+          <div className="mt-4 flex flex-col gap-2">
+            <div
+              className="h-2 w-full overflow-hidden rounded-full bg-cloud"
+              role="progressbar"
+              aria-label={t('dashboard.finance.budgetUsed', { percent: Math.round(budgetPercent) })}
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={Math.round(budgetPercent)}
+            >
+              <div
+                className={cn(
+                  'h-full rounded-full transition-[width] duration-700 ease-out',
+                  budgetStyle.bar,
+                )}
+                style={{ width: `${Math.min(100, Math.max(2, budgetPercent))}%` }}
+              />
+            </div>
+            <p className="text-caption text-slate">
+              {t('dashboard.finance.budgetUsed', { percent: Math.round(budgetPercent) })} ·{' '}
+              {formatIDR(summary?.total_expense ?? 0)} / {formatIDR(budget)}
+            </p>
+          </div>
+        )}
+      </Card>
 
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
         {/* Today's habits */}
