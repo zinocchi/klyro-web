@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   LayoutDashboard,
   ListTodo,
   Repeat2,
   Wallet,
   StickyNote,
+  Settings,
   LogOut,
   Menu,
   X,
@@ -13,23 +15,41 @@ import {
 import { toast } from 'sonner';
 import { ConfirmModal } from '../ui/ConfirmModal';
 import { useAuthStore } from '../../stores/authStore';
+import { updateMe } from '../../features/auth/api/auth.api';
 import { cn } from '../../lib/utils';
+import type { Language } from '../../types/api.types';
 import { KlyroIcon, KlyroLogo } from '../brand/KlyroLogo';
 
 const NAV_ITEMS = [
-  { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { to: '/tasks', label: 'Tasks', icon: ListTodo },
-  { to: '/habits', label: 'Habits', icon: Repeat2 },
-  { to: '/money', label: 'Money', icon: Wallet },
-  { to: '/notes', label: 'Notes', icon: StickyNote },
+  { to: '/dashboard', key: 'nav.dashboard', icon: LayoutDashboard },
+  { to: '/tasks', key: 'nav.tasks', icon: ListTodo },
+  { to: '/habits', key: 'nav.habits', icon: Repeat2 },
+  { to: '/money', key: 'nav.money', icon: Wallet },
+  { to: '/notes', key: 'nav.notes', icon: StickyNote },
+  { to: '/settings', key: 'nav.settings', icon: Settings },
 ] as const;
+
+const LANGUAGE_CODES: Language[] = ['id', 'en'];
 
 export function AppLayout() {
   const [open, setOpen] = useState(false);
   const [logoutOpen, setLogoutOpen] = useState(false);
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
   const user = useAuthStore((s) => s.user);
+  const setUser = useAuthStore((s) => s.setUser);
   const logout = useAuthStore((s) => s.logout);
+
+  const language: Language = user?.language === 'en' ? 'en' : 'id';
+
+  const switchLanguage = (next: Language) => {
+    if (next === language) return;
+    // Flip the UI first so the toggle feels instant, then persist the preference.
+    void i18n.changeLanguage(next);
+    updateMe({ language: next })
+      .then((data) => setUser(data.user))
+      .catch(() => toast.error(t('common.languageError')));
+  };
 
   // Lock background scroll while the slide-over drawer is open.
   useEffect(() => {
@@ -53,13 +73,38 @@ export function AppLayout() {
     logout();
     setLogoutOpen(false);
     setOpen(false);
-    toast.success('Berhasil keluar. Sampai jumpa!');
+    toast.success(t('common.loggedOut'));
     navigate('/login', { replace: true });
   };
 
+  const languageToggle = (
+    <div
+      role="group"
+      aria-label={t('common.changeLanguage')}
+      className="flex shrink-0 items-center gap-0.5 rounded-full border border-pebble p-0.5"
+    >
+      {LANGUAGE_CODES.map((code) => (
+        <button
+          key={code}
+          type="button"
+          onClick={() => switchLanguage(code)}
+          aria-pressed={language === code}
+          className={cn(
+            'min-h-[32px] rounded-full px-3 text-caption font-medium uppercase transition-colors',
+            language === code
+              ? 'bg-monday-violet text-snow'
+              : 'text-slate hover:bg-cloud hover:text-ink',
+          )}
+        >
+          {code}
+        </button>
+      ))}
+    </div>
+  );
+
   const navContent = (
     <nav className="flex flex-col gap-1">
-      {NAV_ITEMS.map(({ to, label, icon: Icon }) => (
+      {NAV_ITEMS.map(({ to, key, icon: Icon }) => (
         <NavLink
           key={to}
           to={to}
@@ -74,7 +119,7 @@ export function AppLayout() {
           }
         >
           <Icon size={18} className="shrink-0" />
-          {label}
+          {t(key)}
         </NavLink>
       ))}
     </nav>
@@ -97,7 +142,7 @@ export function AppLayout() {
         className="flex min-h-[44px] w-full items-center gap-3 rounded-[6px] px-3 py-2 text-body-sm font-medium text-slate transition-colors hover:bg-cloud hover:text-ink"
       >
         <LogOut size={18} className="shrink-0" />
-        Log out
+        {t('common.logout')}
       </button>
     </div>
   );
@@ -105,16 +150,19 @@ export function AppLayout() {
   return (
     <div className="flex min-h-screen flex-col bg-cloud lg:flex-row">
       {/* Mobile header */}
-      <header className="sticky top-0 z-30 flex items-center justify-between border-b border-mist bg-snow px-4 py-3 lg:hidden">
+      <header className="sticky top-0 z-30 flex items-center justify-between gap-3 border-b border-mist bg-snow px-4 py-3 lg:hidden">
         <KlyroLogo height={26} />
-        <button
-          type="button"
-          onClick={() => setOpen(true)}
-          aria-label="Open navigation"
-          className="-mr-2 rounded-full p-3 text-slate transition-colors hover:bg-cloud"
-        >
-          <Menu size={22} />
-        </button>
+        <div className="flex items-center gap-1">
+          {languageToggle}
+          <button
+            type="button"
+            onClick={() => setOpen(true)}
+            aria-label={t('nav.openNav')}
+            className="-mr-2 rounded-full p-3 text-slate transition-colors hover:bg-cloud"
+          >
+            <Menu size={22} />
+          </button>
+        </div>
       </header>
 
       {/* Mobile slide-over drawer */}
@@ -143,7 +191,7 @@ export function AppLayout() {
             <button
               type="button"
               onClick={() => setOpen(false)}
-              aria-label="Close navigation"
+              aria-label={t('nav.closeNav')}
               className="-mr-2 rounded-full p-3 text-slate transition-colors hover:bg-cloud"
             >
               <X size={22} />
@@ -157,8 +205,9 @@ export function AppLayout() {
 
       {/* Desktop sidebar */}
       <aside className="hidden w-64 shrink-0 flex-col border-r border-mist bg-snow p-6 lg:sticky lg:top-0 lg:flex lg:h-screen">
-        <div className="mb-8 flex items-center">
+        <div className="mb-8 flex items-center justify-between gap-2">
           <KlyroLogo height={30} />
+          {languageToggle}
         </div>
         {navContent}
         <div className="mt-auto">{accountBlock}</div>
@@ -172,9 +221,9 @@ export function AppLayout() {
         isOpen={logoutOpen}
         onClose={() => setLogoutOpen(false)}
         onConfirm={handleLogout}
-        title="Keluar dari Akun?"
-        description="Kamu perlu login kembali untuk mengakses datamu."
-        confirmText="Keluar"
+        title={t('common.logoutTitle')}
+        description={t('common.logoutDescription')}
+        confirmText={t('common.logoutConfirm')}
         variant="danger"
       />
     </div>

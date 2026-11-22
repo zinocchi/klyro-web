@@ -26,6 +26,7 @@ export function DateNavigator({ value, onChange }: DateNavigatorProps) {
           value={value}
           onChange={(date) => date && onChange(date)}
           placeholder="Pilih tanggal"
+          maxDate={today}
         />
         <p className="mt-1 text-caption text-slate">{formatLongDate(value)}</p>
       </div>
@@ -33,8 +34,9 @@ export function DateNavigator({ value, onChange }: DateNavigatorProps) {
       <button
         type="button"
         onClick={() => onChange(shiftDateKey(value, 1))}
+        disabled={shiftDateKey(value, 1) > today}
         aria-label="Next day"
-        className="rounded-full border border-pebble p-2 text-slate transition-colors hover:border-monday-violet hover:text-monday-violet"
+        className="rounded-full border border-pebble p-2 text-slate transition-colors hover:border-monday-violet hover:text-monday-violet disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-pebble disabled:hover:text-slate"
       >
         <ChevronRight size={18} />
       </button>

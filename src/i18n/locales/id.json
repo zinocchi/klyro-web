@@ -1,0 +1,115 @@
+{
+  "common": {
+    "appName": "Klyro",
+    "today": "Hari ini",
+    "clear": "Kosongkan",
+    "selectDate": "Pilih tanggal",
+    "selectMonth": "Pilih bulan",
+    "thisMonth": "Bulan ini",
+    "previousMonth": "Bulan sebelumnya",
+    "nextMonth": "Bulan berikutnya",
+    "previousYear": "Tahun sebelumnya",
+    "nextYear": "Tahun berikutnya",
+    "previousDay": "Hari sebelumnya",
+    "nextDay": "Hari berikutnya",
+    "loading": "Memuat…",
+    "save": "Simpan",
+    "saving": "Menyimpan…",
+    "cancel": "Batal",
+    "delete": "Hapus",
+    "language": "Bahasa",
+    "changeLanguage": "Ubah bahasa",
+    "logout": "Keluar",
+    "logoutTitle": "Keluar dari Akun?",
+    "logoutDescription": "Kamu perlu login kembali untuk mengakses datamu.",
+    "logoutConfirm": "Keluar",
+    "loggedOut": "Berhasil keluar. Sampai jumpa!",
+    "genericError": "Terjadi kesalahan. Coba lagi.",
+    "languageError": "Gagal menyimpan preferensi bahasa."
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "tasks": "Tasks",
+    "habits": "Habits",
+    "money": "Money",
+    "notes": "Notes",
+    "settings": "Settings",
+    "openNav": "Buka navigasi",
+    "closeNav": "Tutup navigasi"
+  },
+  "dashboard": {
+    "title": "Command Center",
+    "subtitle": "Ringkasan harian kehidupanmu.",
+    "loadError": "Gagal memuat dashboard."
+  },
+  "tasks": {
+    "title": "Tasks",
+    "subtitle": "Kelola pekerjaan dan tenggat waktunya.",
+    "empty": "Belum ada task",
+    "emptyDescription": "Tambahkan task pertamamu untuk mulai produktif.",
+    "newTask": "Task baru",
+    "loadError": "Gagal memuat task."
+  },
+  "habits": {
+    "title": "Habits",
+    "subtitle": "Check in harian dan jaga streak-mu.",
+    "empty": "Belum ada habit",
+    "emptyDescription": "Buat habit dan mulai bangun streak.",
+    "newHabit": "Habit baru",
+    "loadError": "Gagal memuat habit."
+  },
+  "money": {
+    "title": "Money",
+    "subtitle": "Catat pemasukan dan pengeluaranmu.",
+    "empty": "Belum ada transaksi",
+    "emptyDescription": "Tambahkan pemasukan atau pengeluaran pertama bulan ini.",
+    "newTransaction": "Transaksi",
+    "loadError": "Gagal memuat transaksi."
+  },
+  "notes": {
+    "title": "Notes",
+    "subtitle": "Semua catatan dan ide dalam satu tempat.",
+    "empty": "Belum ada catatan",
+    "emptyDescription": "Tulis catatan pertamamu sekarang.",
+    "newNote": "Catatan baru",
+    "loadError": "Gagal memuat catatan."
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Atur profil dan keamanan akunmu.",
+    "profile": {
+      "title": "Profil & Preferensi Life OS",
+      "description": "Data ini dipakai untuk sapaan, anggaran bulanan, dan pengingat harianmu.",
+      "name": "Nama",
+      "namePlaceholder": "Nama lengkap",
+      "budget": "Budget bulanan (Rp)",
+      "budgetPlaceholder": "Contoh: 5000000",
+      "budgetHint": "Kosongkan bila belum ingin memasang budget.",
+      "reminderTime": "Jam pengingat harian",
+      "reminderTimeHint": "Format 24 jam, contoh 07:30.",
+      "languageLabel": "Bahasa antarmuka",
+      "languageId": "Bahasa Indonesia",
+      "languageEn": "English",
+      "save": "Simpan profil",
+      "saved": "Profil diperbarui"
+    },
+    "password": {
+      "title": "Keamanan Akun",
+      "description": "Ganti password secara berkala agar akunmu tetap aman.",
+      "current": "Password saat ini",
+      "new": "Password baru",
+      "newHint": "Minimal 8 karakter.",
+      "save": "Ubah password",
+      "saved": "Password diperbarui. Gunakan password baru saat login berikutnya."
+    }
+  },
+  "validation": {
+    "nameMin": "Nama minimal 2 karakter",
+    "nameMax": "Nama terlalu panjang",
+    "budgetInteger": "Nominal harus angka bulat tanpa titik atau koma",
+    "timeFormat": "Gunakan format HH:mm, contoh 07:30",
+    "currentPasswordRequired": "Password saat ini wajib diisi",
+    "newPasswordMin": "Password baru minimal 8 karakter",
+    "newPasswordTooLong": "Password terlalu panjang"
+  }
+}

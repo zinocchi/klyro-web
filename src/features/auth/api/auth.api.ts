@@ -5,6 +5,8 @@ import type {
   AuthData,
   LoginRequest,
   RegisterRequest,
+  UpdatePasswordRequest,
+  UpdateProfileRequest,
   UserData,
 } from '../../../types/api.types';
 
@@ -20,4 +22,14 @@ export function login(payload: LoginRequest) {
 
 export function getMe() {
   return unwrap<UserData>(api.get<ApiResponse<UserData>>('/auth/me'));
+}
+
+export function updateMe(payload: UpdateProfileRequest) {
+  return unwrap<UserData>(api.patch<ApiResponse<UserData>>('/auth/me', payload));
+}
+
+export function updatePassword(payload: UpdatePasswordRequest) {
+  return unwrap<Record<string, never>>(
+    api.patch<ApiResponse<Record<string, never>>>('/auth/password', payload),
+  );
 }

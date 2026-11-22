@@ -11,6 +11,7 @@ import { DashboardPage } from './features/dashboard/pages/DashboardPage';
 import { HabitsPage } from './features/habits/pages/HabitsPage';
 import { MoneyPage } from './features/money/pages/MoneyPage';
 import { NotesPage } from './features/notes/pages/NotesPage';
+import { SettingsPage } from './features/settings/pages/SettingsPage';
 import { TasksPage } from './features/tasks/pages/TasksPage';
 
 function App() {
@@ -46,6 +47,7 @@ function App() {
             <Route path="/habits" element={<HabitsPage />} />
             <Route path="/money" element={<MoneyPage />} />
             <Route path="/notes" element={<NotesPage />} />
+            <Route path="/settings" element={<SettingsPage />} />
           </Route>
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
           <Route path="*" element={<Navigate to="/dashboard" replace />} />

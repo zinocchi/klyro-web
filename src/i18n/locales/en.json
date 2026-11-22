@@ -1,0 +1,115 @@
+{
+  "common": {
+    "appName": "Klyro",
+    "today": "Today",
+    "clear": "Clear",
+    "selectDate": "Pick a date",
+    "selectMonth": "Pick a month",
+    "thisMonth": "This month",
+    "previousMonth": "Previous month",
+    "nextMonth": "Next month",
+    "previousYear": "Previous year",
+    "nextYear": "Next year",
+    "previousDay": "Previous day",
+    "nextDay": "Next day",
+    "loading": "Loading…",
+    "save": "Save",
+    "saving": "Saving…",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "language": "Language",
+    "changeLanguage": "Change language",
+    "logout": "Log out",
+    "logoutTitle": "Log out of your account?",
+    "logoutDescription": "You will need to sign in again to reach your data.",
+    "logoutConfirm": "Log out",
+    "loggedOut": "Signed out. See you soon!",
+    "genericError": "Something went wrong. Please try again.",
+    "languageError": "Could not save your language preference."
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "tasks": "Tasks",
+    "habits": "Habits",
+    "money": "Money",
+    "notes": "Notes",
+    "settings": "Settings",
+    "openNav": "Open navigation",
+    "closeNav": "Close navigation"
+  },
+  "dashboard": {
+    "title": "Command Center",
+    "subtitle": "Your daily life at a glance.",
+    "loadError": "Could not load the dashboard."
+  },
+  "tasks": {
+    "title": "Tasks",
+    "subtitle": "Manage your work and its deadlines.",
+    "empty": "No tasks yet",
+    "emptyDescription": "Add your first task to get productive.",
+    "newTask": "New Task",
+    "loadError": "Could not load tasks."
+  },
+  "habits": {
+    "title": "Habits",
+    "subtitle": "Check in daily and keep your streak alive.",
+    "empty": "No habits yet",
+    "emptyDescription": "Create a habit and start building a streak.",
+    "newHabit": "New Habit",
+    "loadError": "Could not load habits."
+  },
+  "money": {
+    "title": "Money",
+    "subtitle": "Track your income and spending.",
+    "empty": "No transactions yet",
+    "emptyDescription": "Add your first income or expense for this month.",
+    "newTransaction": "Transaction",
+    "loadError": "Could not load transactions."
+  },
+  "notes": {
+    "title": "Notes",
+    "subtitle": "Every note and idea in one place.",
+    "empty": "No notes yet",
+    "emptyDescription": "Write your first note now.",
+    "newNote": "New Note",
+    "loadError": "Could not load notes."
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Manage your profile and account security.",
+    "profile": {
+      "title": "Profile & Life OS Preferences",
+      "description": "Used for your greeting, monthly budget, and daily reminders.",
+      "name": "Name",
+      "namePlaceholder": "Full name",
+      "budget": "Monthly budget (Rp)",
+      "budgetPlaceholder": "e.g. 5000000",
+      "budgetHint": "Leave empty if you do not want a budget yet.",
+      "reminderTime": "Daily reminder time",
+      "reminderTimeHint": "24-hour format, e.g. 07:30.",
+      "languageLabel": "Interface language",
+      "languageId": "Bahasa Indonesia",
+      "languageEn": "English",
+      "save": "Save profile",
+      "saved": "Profile updated"
+    },
+    "password": {
+      "title": "Account Security",
+      "description": "Rotate your password regularly to keep the account safe.",
+      "current": "Current password",
+      "new": "New password",
+      "newHint": "At least 8 characters.",
+      "save": "Change password",
+      "saved": "Password updated. Use the new one on your next sign-in."
+    }
+  },
+  "validation": {
+    "nameMin": "Name must be at least 2 characters",
+    "nameMax": "Name is too long",
+    "budgetInteger": "Use whole rupiah digits, no separators",
+    "timeFormat": "Use HH:mm format, e.g. 07:30",
+    "currentPasswordRequired": "Current password is required",
+    "newPasswordMin": "New password must be at least 8 characters",
+    "newPasswordTooLong": "Password is too long"
+  }
+}

@@ -37,14 +37,16 @@ export function MonthSelector({ value, onChange }: MonthSelectorProps) {
           onChange={onChange}
           placeholder="Pilih bulan"
           align="end"
+          maxMonth={current}
         />
       </div>
 
       <button
         type="button"
         onClick={() => onChange(shiftMonth(value, 1))}
+        disabled={shiftMonth(value, 1) > current}
         aria-label="Next month"
-        className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full border border-pebble text-slate transition-colors hover:border-monday-violet hover:text-monday-violet"
+        className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full border border-pebble text-slate transition-colors hover:border-monday-violet hover:text-monday-violet disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-pebble disabled:hover:text-slate"
       >
         <ChevronRight size={18} />
       </button>

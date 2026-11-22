@@ -1,9 +1,16 @@
-// Shapes mirroring API.md (klyro-backend v1) — Klyro Personal Life OS.
+// Shapes mirroring API.md (klyro-backend v2) — Klyro Personal Life OS.
 
 export type TaskStatus = 'PENDING' | 'IN_PROGRESS' | 'COMPLETED';
 export type TaskPriority = 'LOW' | 'MEDIUM' | 'HIGH';
 export type TargetDay = 'MON' | 'TUE' | 'WED' | 'THU' | 'FRI' | 'SAT' | 'SUN';
 export type TransactionType = 'INCOME' | 'EXPENSE';
+export type Language = 'id' | 'en';
+export type NotificationType =
+  | 'BUDGET_ALERT'
+  | 'TASK_REMINDER'
+  | 'HABIT_REMINDER'
+  | 'NOTE_REMINDER'
+  | 'DAILY_FINANCE';
 
 export const TASK_STATUSES: TaskStatus[] = ['PENDING', 'IN_PROGRESS', 'COMPLETED'];
 export const TASK_PRIORITIES: TaskPriority[] = ['LOW', 'MEDIUM', 'HIGH'];
@@ -17,6 +24,7 @@ export const TARGET_DAYS: TargetDay[] = [
   'SUN',
 ];
 export const TRANSACTION_TYPES: TransactionType[] = ['INCOME', 'EXPENSE'];
+export const LANGUAGES: Language[] = ['id', 'en'];
 
 /* ---------- Envelope ---------- */
 
@@ -45,7 +53,18 @@ export interface User {
   id: string;
   email: string;
   name: string;
+  /** Integer rupiah ≥ 0, or `null` when unset. */
+  monthly_budget: number | null;
+  language: Language;
+  /** `HH:mm` 24-hour, or `null`. */
+  daily_reminder_time: string | null;
   created_at: string;
+}
+
+export interface Subtask {
+  id: string;
+  title: string;
+  completed: boolean;
 }
 
 export interface Task {
@@ -56,6 +75,10 @@ export interface Task {
   due_date: string | null;
   status: TaskStatus;
   priority: TaskPriority;
+  /** Max 100 entries. */
+  subtasks: Subtask[];
+  /** ISO-8601 datetime, or `null`. */
+  reminder_at: string | null;
   created_at: string;
 }
 
@@ -64,8 +87,13 @@ export interface Habit {
   title: string;
   target_days: TargetDay[];
   streak_count: number;
+  best_streak: number;
+  /** `HH:mm` 24-hour, or `null`. */
+  reminder_time: string | null;
   created_at: string;
   completed: boolean;
+  /** `YYYY-MM-DD` completed logs of the last 30 days (WIB), ascending. */
+  recent_logs: string[];
 }
 
 export interface HabitLog {
@@ -101,8 +129,22 @@ export interface Note {
   title: string;
   content: string;
   is_pinned: boolean;
+  /** String ≤ 50 chars, or `null`. */
+  tag: string | null;
+  /** ISO-8601 datetime, or `null`. */
+  remind_at: string | null;
   created_at: string;
   updated_at: string;
+}
+
+export interface AppNotification {
+  id: string;
+  user_id: string;
+  type: NotificationType;
+  title: string;
+  message: string;
+  is_read: boolean;
+  created_at: string;
 }
 
 /* ---------- Requests ---------- */
@@ -118,12 +160,28 @@ export interface LoginRequest {
   password: string;
 }
 
+export interface UpdateProfileRequest {
+  name?: string;
+  /** Integer rupiah ≥ 0, or `null` to clear. */
+  monthly_budget?: number | null;
+  language?: Language;
+  /** `HH:mm`, or `null` to clear. */
+  daily_reminder_time?: string | null;
+}
+
+export interface UpdatePasswordRequest {
+  current_password: string;
+  new_password: string;
+}
+
 export interface CreateTaskRequest {
   title: string;
   description?: string;
   due_date?: string;
   status?: TaskStatus;
   priority?: TaskPriority;
+  subtasks?: Subtask[];
+  reminder_at?: string | null;
 }
 
 export interface UpdateTaskRequest {
@@ -132,22 +190,27 @@ export interface UpdateTaskRequest {
   due_date?: string;
   status?: TaskStatus;
   priority?: TaskPriority;
+  subtasks?: Subtask[];
+  reminder_at?: string | null;
 }
 
 export interface TaskQueryParams {
   status?: TaskStatus;
   priority?: TaskPriority;
   due_date?: string;
+  search?: string;
 }
 
 export interface CreateHabitRequest {
   title: string;
   target_days: TargetDay[];
+  reminder_time?: string | null;
 }
 
 export interface UpdateHabitRequest {
   title?: string;
   target_days?: TargetDay[];
+  reminder_time?: string | null;
 }
 
 export interface HabitQueryParams {
@@ -190,12 +253,16 @@ export interface CreateNoteRequest {
   title: string;
   content: string;
   is_pinned?: boolean;
+  tag?: string | null;
+  remind_at?: string | null;
 }
 
 export interface UpdateNoteRequest {
   title?: string;
   content?: string;
   is_pinned?: boolean;
+  tag?: string | null;
+  remind_at?: string | null;
 }
 
 export interface NoteQueryParams {
@@ -261,4 +328,17 @@ export interface DeletedData {
 
 export interface HealthData {
   status: string;
+}
+
+export interface NotificationsData {
+  notifications: AppNotification[];
+  unread_count: number;
+}
+
+export interface NotificationData {
+  notification: AppNotification;
+}
+
+export interface NotificationsReadAllData {
+  updated: number;
 }

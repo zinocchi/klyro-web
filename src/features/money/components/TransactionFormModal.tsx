@@ -208,6 +208,7 @@ function TransactionForm({
             label="Tanggal"
             placeholder="Pilih tanggal"
             clearable
+            maxDate={toDateKey()}
             value={field.value ?? ''}
             onChange={field.onChange}
             error={errors.date?.message}

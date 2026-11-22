@@ -16,6 +16,7 @@ import {
   format,
   getMonth,
   getYear,
+  isAfter,
   isSameDay,
   isSameMonth,
   setMonth,
@@ -189,18 +190,21 @@ function Trigger({
 function NavButton({
   onClick,
   label,
+  disabled,
   children,
 }: {
   onClick: () => void;
   label: string;
+  disabled?: boolean;
   children: ReactNode;
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
+      disabled={disabled}
       aria-label={label}
-      className="flex min-h-[36px] min-w-[36px] items-center justify-center rounded-full text-slate transition-colors hover:bg-cloud hover:text-monday-violet"
+      className="flex min-h-[36px] min-w-[36px] items-center justify-center rounded-full text-slate transition-colors hover:bg-cloud hover:text-monday-violet disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-slate"
     >
       {children}
     </button>
@@ -239,6 +243,8 @@ export interface DatePickerProps extends FieldProps {
   disabled?: boolean;
   clearable?: boolean;
   align?: 'start' | 'end';
+  /** `YYYY-MM-DD` — days after this key render disabled (anti future-date). */
+  maxDate?: string;
 }
 
 export function DatePicker({
@@ -250,12 +256,14 @@ export function DatePicker({
   disabled,
   clearable = false,
   align = 'start',
+  maxDate,
 }: DatePickerProps) {
   const id = useId();
   const anchorRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
   const selected = parseDate(value);
   const [cursor, setCursor] = useState<Date>(selected ?? new Date());
+  const max = parseDate(maxDate);
 
   const openCalendar = () => {
     setCursor(selected ?? new Date());
@@ -304,7 +312,11 @@ export function DatePicker({
             <span className="text-body-sm font-medium text-ink">
               {format(cursor, 'MMMM yyyy')}
             </span>
-            <NavButton onClick={() => setCursor(addMonths(cursor, 1))} label="Bulan berikutnya">
+            <NavButton
+              onClick={() => setCursor(addMonths(cursor, 1))}
+              label="Bulan berikutnya"
+              disabled={Boolean(max && isAfter(startOfMonth(addMonths(cursor, 1)), max))}
+            >
               <ChevronRight size={18} />
             </NavButton>
           </div>
@@ -319,11 +331,13 @@ export function DatePicker({
             {days.map((day) => {
               const isSelected = selected ? isSameDay(day, selected) : false;
               const inMonth = isSameMonth(day, cursor);
+              const isFuture = Boolean(max && isAfter(day, max));
               return (
                 <button
                   key={day.toISOString()}
                   type="button"
                   onClick={() => pick(day)}
+                  disabled={isFuture}
                   aria-current={isSelected ? 'date' : undefined}
                   className={cn(
                     'flex min-h-[36px] items-center justify-center rounded-[6px] text-body-sm transition-colors',
@@ -332,6 +346,7 @@ export function DatePicker({
                       : inMonth
                         ? 'text-ink hover:bg-cloud'
                         : 'text-iron hover:bg-cloud',
+                    isFuture && 'cursor-not-allowed text-iron/40 hover:bg-transparent',
                     !isSelected && isSameDay(day, new Date()) && 'border border-monday-violet',
                   )}
                 >
@@ -379,6 +394,8 @@ export interface MonthPickerProps extends FieldProps {
   disabled?: boolean;
   clearable?: boolean;
   align?: 'start' | 'end';
+  /** `YYYY-MM` — months after this key render disabled (anti future-month). */
+  maxMonth?: string;
 }
 
 export function MonthPicker({
@@ -390,12 +407,14 @@ export function MonthPicker({
   disabled,
   clearable = false,
   align = 'start',
+  maxMonth,
 }: MonthPickerProps) {
   const id = useId();
   const anchorRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
   const selected = parseDate(value ? `${value}-01` : null);
   const [cursor, setCursor] = useState<Date>(selected ?? new Date());
+  const max = parseDate(maxMonth ? `${maxMonth}-01` : null);
 
   const openCalendar = () => {
     setCursor(selected ?? new Date());
@@ -446,7 +465,11 @@ export function MonthPicker({
             >
               {getYear(cursor)}
             </button>
-            <NavButton onClick={() => setCursor(addYears(cursor, 1))} label="Tahun berikutnya">
+            <NavButton
+              onClick={() => setCursor(addYears(cursor, 1))}
+              label="Tahun berikutnya"
+              disabled={Boolean(max && getYear(cursor) >= getYear(max))}
+            >
               <ChevronRight size={18} />
             </NavButton>
           </div>
@@ -456,17 +479,20 @@ export function MonthPicker({
               const isSelected = index === selectedMonth && getYear(cursor) === selectedYear;
               const isCurrent =
                 index === getMonth(new Date()) && getYear(cursor) === getYear(new Date());
+              const isFuture = Boolean(max && isAfter(setMonth(cursor, index), max));
               return (
                 <button
                   key={month}
                   type="button"
                   onClick={() => pick(index)}
+                  disabled={isFuture}
                   className={cn(
                     'min-h-[44px] rounded-[6px] text-body-sm transition-colors',
                     isSelected
                       ? 'bg-monday-violet font-medium text-snow'
                       : 'text-ink hover:bg-cloud',
                     !isSelected && isCurrent && 'border border-monday-violet',
+                    isFuture && 'cursor-not-allowed text-iron/40 hover:bg-transparent',
                   )}
                 >
                   {month}
@@ -482,7 +508,8 @@ export function MonthPicker({
                 onChange(toMonthKey());
                 setOpen(false);
               }}
-              className="text-caption font-medium text-monday-violet hover:underline"
+              disabled={Boolean(max && isAfter(startOfMonth(new Date()), max))}
+              className="text-caption font-medium text-monday-violet hover:underline disabled:cursor-not-allowed disabled:text-iron disabled:no-underline"
             >
               Bulan ini
             </button>
