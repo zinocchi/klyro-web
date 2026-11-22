@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
+import { BellRing } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '../../../components/ui/Button';
 import { Card, CardContent, CardHeader } from '../../../components/ui/Card';
@@ -147,6 +148,8 @@ function ProfileCard() {
             <option value="en">{t('settings.profile.languageEn')}</option>
           </Select>
 
+          <BrowserNotifications />
+
           <div className="flex justify-end">
             <Button type="submit" isLoading={pending} className="w-full sm:w-auto">
               {pending ? t('common.saving') : t('settings.profile.save')}
@@ -155,6 +158,53 @@ function ProfileCard() {
         </form>
       </CardContent>
     </Card>
+  );
+}
+
+function BrowserNotifications() {
+  const { t } = useTranslation();
+  const supported = typeof Notification !== 'undefined';
+  const [permission, setPermission] = useState<NotificationPermission | null>(
+    supported ? Notification.permission : null,
+  );
+
+  const request = async () => {
+    if (!supported) return;
+    const result = await Notification.requestPermission();
+    setPermission(result);
+    if (result === 'granted') toast.success(t('settings.profile.notifications.granted'));
+    else if (result === 'denied') toast.error(t('settings.profile.notifications.denied'));
+  };
+
+  const status = !supported
+    ? t('settings.profile.notifications.unsupported')
+    : permission === 'granted'
+      ? t('settings.profile.notifications.enabled')
+      : permission === 'denied'
+        ? t('settings.profile.notifications.blocked')
+        : t('settings.profile.notifications.notEnabled');
+
+  return (
+    <div className="flex flex-col gap-3 rounded-[6px] border border-pebble p-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="min-w-0">
+        <p className="text-body-sm font-medium text-ink">
+          {t('settings.profile.notifications.title')}
+        </p>
+        <p className="mt-1 text-caption text-iron">{status}</p>
+      </div>
+      <Button
+        type="button"
+        variant="secondary"
+        onClick={request}
+        disabled={!supported || permission === 'granted' || permission === 'denied'}
+        className="w-full sm:w-auto"
+      >
+        <BellRing size={16} />
+        {permission === 'granted'
+          ? t('settings.profile.notifications.enabled')
+          : t('settings.profile.notifications.enable')}
+      </Button>
+    </div>
   );
 }
 

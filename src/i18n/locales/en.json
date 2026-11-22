@@ -37,6 +37,25 @@
     "openNav": "Open navigation",
     "closeNav": "Close navigation"
   },
+  "notifications": {
+    "title": "Notifications",
+    "aria": "Open notifications",
+    "ariaUnread": "Open notifications, {{count}} unread",
+    "markAllRead": "Mark all as read",
+    "empty": "No notifications yet",
+    "loadError": "Could not load notifications.",
+    "unread": "Unread"
+  },
+  "reminders": {
+    "taskTitle": "Task reminder",
+    "taskBody": "\"{{title}}\" is due now.",
+    "habitTitle": "Habit reminder",
+    "habitBody": "Time to check in \"{{title}}\".",
+    "noteTitle": "Note reminder",
+    "noteBody": "Your note is waiting.",
+    "dailyTitle": "Daily finance reminder",
+    "dailyBody": "Take a moment to log today's income and spending."
+  },
   "dashboard": {
     "title": "Command Center",
     "subtitle": "Your daily life at a glance.",
@@ -156,7 +175,17 @@
       "languageId": "Bahasa Indonesia",
       "languageEn": "English",
       "save": "Save profile",
-      "saved": "Profile updated"
+      "saved": "Profile updated",
+      "notifications": {
+        "title": "Browser Notifications",
+        "notEnabled": "Not enabled — allow them so reminders show on this device.",
+        "enabled": "Enabled",
+        "blocked": "Blocked by the browser. Change the site permission to enable.",
+        "unsupported": "This browser does not support notifications.",
+        "enable": "Enable notifications",
+        "granted": "Browser notifications enabled",
+        "denied": "Notification permission denied"
+      }
     },
     "password": {
       "title": "Account Security",

@@ -16,6 +16,8 @@ import { toast } from 'sonner';
 import { ConfirmModal } from '../ui/ConfirmModal';
 import { useAuthStore } from '../../stores/authStore';
 import { updateMe } from '../../features/auth/api/auth.api';
+import { NotificationBell } from '../../features/notifications/components/NotificationBell';
+import { useReminderScheduler } from '../../hooks/useReminderScheduler';
 import { cn } from '../../lib/utils';
 import type { Language } from '../../types/api.types';
 import { KlyroIcon, KlyroLogo } from '../brand/KlyroLogo';
@@ -39,6 +41,8 @@ export function AppLayout() {
   const user = useAuthStore((s) => s.user);
   const setUser = useAuthStore((s) => s.setUser);
   const logout = useAuthStore((s) => s.logout);
+
+  useReminderScheduler();
 
   const language: Language = user?.language === 'en' ? 'en' : 'id';
 
@@ -153,6 +157,7 @@ export function AppLayout() {
       <header className="sticky top-0 z-30 flex items-center justify-between gap-3 border-b border-mist bg-snow px-4 py-3 lg:hidden">
         <KlyroLogo height={26} />
         <div className="flex items-center gap-1">
+          <NotificationBell />
           {languageToggle}
           <button
             type="button"
@@ -207,7 +212,10 @@ export function AppLayout() {
       <aside className="hidden w-64 shrink-0 flex-col border-r border-mist bg-snow p-6 lg:sticky lg:top-0 lg:flex lg:h-screen">
         <div className="mb-8 flex items-center justify-between gap-2">
           <KlyroLogo height={30} />
-          {languageToggle}
+          <div className="flex items-center gap-1">
+            {languageToggle}
+            <NotificationBell />
+          </div>
         </div>
         {navContent}
         <div className="mt-auto">{accountBlock}</div>

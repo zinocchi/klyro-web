@@ -37,6 +37,25 @@
     "openNav": "Buka navigasi",
     "closeNav": "Tutup navigasi"
   },
+  "notifications": {
+    "title": "Notifikasi",
+    "aria": "Buka notifikasi",
+    "ariaUnread": "Buka notifikasi, {{count}} belum dibaca",
+    "markAllRead": "Tandai semua dibaca",
+    "empty": "Belum ada notifikasi",
+    "loadError": "Gagal memuat notifikasi.",
+    "unread": "Belum dibaca"
+  },
+  "reminders": {
+    "taskTitle": "Pengingat task",
+    "taskBody": "\"{{title}}\" sudah waktunya dikerjakan.",
+    "habitTitle": "Pengingat habit",
+    "habitBody": "Waktunya check-in \"{{title}}\".",
+    "noteTitle": "Pengingat catatan",
+    "noteBody": "Catatanmu menunggu untuk dibuka.",
+    "dailyTitle": "Pengingat keuangan harian",
+    "dailyBody": "Luangkan waktu mencatat pemasukan dan pengeluaran hari ini."
+  },
   "dashboard": {
     "title": "Command Center",
     "subtitle": "Ringkasan harian kehidupanmu.",
@@ -156,7 +175,17 @@
       "languageId": "Bahasa Indonesia",
       "languageEn": "English",
       "save": "Simpan profil",
-      "saved": "Profil diperbarui"
+      "saved": "Profil diperbarui",
+      "notifications": {
+        "title": "Notifikasi Browser",
+        "notEnabled": "Belum aktif — izinkan agar pengingat muncul di perangkat ini.",
+        "enabled": "Aktif",
+        "blocked": "Diblokir browser. Ubah izin lewat pengaturan situs.",
+        "unsupported": "Browser ini tidak mendukung notifikasi.",
+        "enable": "Aktifkan notifikasi",
+        "granted": "Notifikasi browser aktif",
+        "denied": "Izin notifikasi ditolak"
+      }
     },
     "password": {
       "title": "Keamanan Akun",
