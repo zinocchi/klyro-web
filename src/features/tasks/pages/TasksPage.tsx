@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Plus } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Plus, Search } from 'lucide-react';
 import { Button } from '../../../components/ui/Button';
 import { Spinner } from '../../../components/ui/Spinner';
 import type { Task } from '../../../types/api.types';
@@ -10,16 +10,25 @@ import { useTasks } from '../hooks/useTasks';
 import type { TaskFilterValues } from '../schemas/task.schema';
 
 const EMPTY_FILTERS: TaskFilterValues = {};
+const SEARCH_DEBOUNCE_MS = 300;
 
 export function TasksPage() {
   const [filters, setFilters] = useState<TaskFilterValues>(EMPTY_FILTERS);
+  const [search, setSearch] = useState('');
+  const [debounced, setDebounced] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState<Task | null>(null);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebounced(search.trim()), SEARCH_DEBOUNCE_MS);
+    return () => clearTimeout(timer);
+  }, [search]);
 
   const query = useTasks({
     status: filters.status,
     priority: filters.priority,
     due_date: filters.due_date || undefined,
+    search: debounced || undefined,
   });
 
   const openCreate = () => {
@@ -46,6 +55,22 @@ export function TasksPage() {
           New Task
         </Button>
       </header>
+
+      <div className="relative">
+        <Search
+          size={16}
+          aria-hidden="true"
+          className="pointer-events-none absolute top-1/2 left-4 -translate-y-1/2 text-iron"
+        />
+        <input
+          type="search"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Cari task…"
+          aria-label="Cari task"
+          className="min-h-[44px] w-full rounded-[6px] border border-pebble bg-snow py-3 pr-4 pl-10 text-body-sm text-ink placeholder:text-iron focus:border-monday-violet focus:outline-none focus:ring-1 focus:ring-monday-violet"
+        />
+      </div>
 
       <TaskFilters
         value={filters}

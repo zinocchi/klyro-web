@@ -6,10 +6,11 @@ import { Button } from '../../../components/ui/Button';
 import { Input } from '../../../components/ui/Input';
 import { Modal } from '../../../components/ui/Modal';
 import { ApiError } from '../../../lib/api';
-import { cn } from '../../../lib/utils';
+import { cn, toDateTimeInputValue } from '../../../lib/utils';
 import type { Note } from '../../../types/api.types';
 import { useCreateNote, useUpdateNote } from '../hooks/useNotes';
 import { noteFormSchema, type NoteFormValues } from '../schemas/note.schema';
+import { NOTE_TAGS } from '../tagLabels';
 
 export interface NoteFormModalProps {
   open: boolean;
@@ -44,10 +45,13 @@ function NoteForm({ note, onClose }: { note?: Note | null; onClose: () => void }
       title: note?.title ?? '',
       content: note?.content ?? '',
       is_pinned: note?.is_pinned ?? false,
+      tag: note?.tag ?? '',
+      remind_at: toDateTimeInputValue(note?.remind_at),
     },
   });
 
   const isPinned = useWatch({ control, name: 'is_pinned' });
+  const tag = useWatch({ control, name: 'tag' });
 
   const onSubmit = (values: NoteFormValues) => {
     setFormError(null);
@@ -75,6 +79,8 @@ function NoteForm({ note, onClose }: { note?: Note | null; onClose: () => void }
             title: values.title,
             content: values.content,
             is_pinned: values.is_pinned,
+            tag: values.tag?.trim() || null,
+            remind_at: values.remind_at ? new Date(values.remind_at).toISOString() : null,
           },
         },
         {
@@ -89,7 +95,13 @@ function NoteForm({ note, onClose }: { note?: Note | null; onClose: () => void }
     }
 
     createMutation.mutate(
-      { title: values.title, content: values.content, is_pinned: values.is_pinned },
+      {
+        title: values.title,
+        content: values.content,
+        is_pinned: values.is_pinned,
+        tag: values.tag?.trim() || null,
+        remind_at: values.remind_at ? new Date(values.remind_at).toISOString() : null,
+      },
       {
         onSuccess: () => {
           toast.success('Catatan dibuat');
@@ -116,6 +128,37 @@ function NoteForm({ note, onClose }: { note?: Note | null; onClose: () => void }
       />
 
       <div className="flex flex-col gap-2">
+        <Input
+          label="Tag"
+          placeholder="Pilih atau tulis tag sendiri…"
+          maxLength={50}
+          error={errors.tag?.message}
+          {...register('tag')}
+        />
+        <div className="flex flex-wrap gap-2">
+          {NOTE_TAGS.map((preset) => {
+            const active = (tag ?? '').toLowerCase() === preset.toLowerCase();
+            return (
+              <button
+                key={preset}
+                type="button"
+                aria-pressed={active}
+                onClick={() => setValue('tag', active ? '' : preset, { shouldValidate: true })}
+                className={cn(
+                  'rounded-full px-3 py-1 text-caption font-medium transition-colors',
+                  active
+                    ? 'bg-monday-violet text-snow'
+                    : 'border border-pebble bg-snow text-slate hover:border-monday-violet',
+                )}
+              >
+                {preset}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-2">
         <label htmlFor="note-content" className="text-body-sm font-medium text-ink">
           Isi
         </label>
@@ -134,6 +177,13 @@ function NoteForm({ note, onClose }: { note?: Note | null; onClose: () => void }
           <p className="text-caption text-[#e05c5c]">{errors.content.message}</p>
         )}
       </div>
+
+      <Input
+        type="datetime-local"
+        label="Pengingat catatan (opsional)"
+        error={errors.remind_at?.message}
+        {...register('remind_at')}
+      />
 
       <button
         type="button"

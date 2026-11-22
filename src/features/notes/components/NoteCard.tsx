@@ -1,10 +1,12 @@
 import { useState } from 'react';
-import { Pin, PinOff, Pencil, Trash2 } from 'lucide-react';
+import { AlarmClock, Check, Pin, PinOff, Pencil, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { Badge } from '../../../components/ui/Badge';
 import { ConfirmModal } from '../../../components/ui/ConfirmModal';
-import { cn, formatDate } from '../../../lib/utils';
+import { cn, formatDate, formatDateTime } from '../../../lib/utils';
 import type { Note } from '../../../types/api.types';
 import { useDeleteNote, useUpdateNote } from '../hooks/useNotes';
+import { tagTone } from '../tagLabels';
 
 export interface NoteCardProps {
   note: Note;
@@ -44,7 +46,12 @@ export function NoteCard({ note, onEdit }: NoteCardProps) {
       )}
     >
       <div className="flex items-start justify-between gap-2">
-        <h3 className="min-w-0 break-words text-body font-medium text-ink">{note.title}</h3>
+        <div className="min-w-0">
+          <h3 className="break-words text-body font-medium text-ink">{note.title}</h3>
+          {note.tag && (
+            <Badge className={cn('mt-1', tagTone(note.tag))}>{note.tag}</Badge>
+          )}
+        </div>
         <button
           type="button"
           onClick={togglePin}
@@ -62,12 +69,18 @@ export function NoteCard({ note, onEdit }: NoteCardProps) {
         </button>
       </div>
 
-      <p className="line-clamp-5 whitespace-pre-line break-words text-body-sm text-slate">
-        {note.content}
-      </p>
+      <NoteContent content={note.content} />
 
       <div className="mt-auto flex items-center justify-between gap-2 border-t border-pebble pt-3">
-        <span className="text-caption text-iron">{formatDate(note.updated_at)}</span>
+        <div className="flex min-w-0 flex-wrap items-center gap-2">
+          <span className="text-caption text-iron">{formatDate(note.updated_at)}</span>
+          {note.remind_at && (
+            <Badge tone="info" className="gap-1">
+              <AlarmClock size={12} />
+              {formatDateTime(note.remind_at)}
+            </Badge>
+          )}
+        </div>
         <div className="flex items-center gap-1">
           <button
             type="button"
@@ -97,5 +110,49 @@ export function NoteCard({ note, onEdit }: NoteCardProps) {
         isLoading={deleteMutation.isPending}
       />
     </article>
+  );
+}
+
+const CHECKLIST_LINE = /^- \[( |x|X)\]\s+(.*)$/;
+const MAX_LINES = 8;
+
+/** Note body preview: `- [ ]` / `- [x]` lines render as checkboxes, the rest as text. */
+function NoteContent({ content }: { content: string }) {
+  const lines = content.split('\n');
+  return (
+    <div className="flex flex-col gap-1 text-body-sm text-slate">
+      {lines.slice(0, MAX_LINES).map((line, index) => {
+        const match = line.match(CHECKLIST_LINE);
+        if (match) {
+          const checked = match[1].toLowerCase() === 'x';
+          return (
+            <div key={index} className="flex items-start gap-2">
+              <span
+                className={cn(
+                  'mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-[4px] border',
+                  checked
+                    ? 'border-monday-violet bg-monday-violet text-snow'
+                    : 'border-pebble bg-snow text-transparent',
+                )}
+              >
+                <Check size={12} />
+              </span>
+              <span
+                className={cn('min-w-0 break-words', checked && 'text-iron line-through')}
+              >
+                {match[2]}
+              </span>
+            </div>
+          );
+        }
+        if (!line.trim()) return <span key={index} className="h-1" aria-hidden="true" />;
+        return (
+          <p key={index} className="break-words whitespace-pre-line">
+            {line}
+          </p>
+        );
+      })}
+      {lines.length > MAX_LINES && <span className="text-caption text-iron">…</span>}
+    </div>
   );
 }

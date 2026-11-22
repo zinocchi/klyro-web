@@ -55,7 +55,19 @@
     "empty": "No tasks yet",
     "emptyDescription": "Add your first task to get productive.",
     "newTask": "New Task",
-    "loadError": "Could not load tasks."
+    "loadError": "Could not load tasks.",
+    "search": "Search tasks",
+    "searchPlaceholder": "Search task title or description",
+    "noMatch": "No tasks match your search.",
+    "subtasks": "Subtasks",
+    "subtaskPlaceholder": "Add a small step…",
+    "addSubtask": "Add subtask",
+    "removeSubtask": "Remove subtask",
+    "toggleSubtask": "Toggle subtask",
+    "subtaskProgress": "{{done}}/{{total}} subtasks done",
+    "reminder": "Reminder",
+    "reminderHint": "Leave empty if you do not need a reminder.",
+    "reminderBadge": "Reminder {{time}}"
   },
   "habits": {
     "title": "Habits",
@@ -63,7 +75,15 @@
     "empty": "No habits yet",
     "emptyDescription": "Create a habit and start building a streak.",
     "newHabit": "New Habit",
-    "loadError": "Could not load habits."
+    "loadError": "Could not load habits.",
+    "currentStreak": "{{count}} day streak",
+    "bestStreak": "Best {{count}}",
+    "bestStreakLabel": "Best streak",
+    "heatmapTitle": "Last 30 days",
+    "heatmapAria": "{{done}} of the last 30 days completed",
+    "reminder": "Daily reminder",
+    "reminderHint": "24-hour format, e.g. 07:30.",
+    "reminderBadge": "Reminder {{time}}"
   },
   "money": {
     "title": "Money",
@@ -104,7 +124,20 @@
     "empty": "No notes yet",
     "emptyDescription": "Write your first note now.",
     "newNote": "New Note",
-    "loadError": "Could not load notes."
+    "loadError": "Could not load notes.",
+    "tag": "Tag",
+    "tagPlaceholder": "Pick or type your own tag…",
+    "tagAll": "All tags",
+    "tags": {
+      "ide": "Ideas",
+      "kerja": "Work",
+      "pribadi": "Personal",
+      "keuangan": "Finance"
+    },
+    "checklistHint": "Use - [ ] and - [x] for a quick checklist.",
+    "reminder": "Note reminder",
+    "reminderHint": "Leave empty if you do not need a reminder.",
+    "reminderBadge": "Reminder {{time}}"
   },
   "settings": {
     "title": "Settings",

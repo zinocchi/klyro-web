@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import { Pencil, Trash2 } from 'lucide-react';
+import { AlarmClock, Check, Pencil, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { ConfirmModal } from '../../../components/ui/ConfirmModal';
-import { cn, formatDate } from '../../../lib/utils';
+import { cn, formatDate, formatDateTime } from '../../../lib/utils';
 import { TASK_STATUSES, type Task, type TaskStatus } from '../../../types/api.types';
 import { useDeleteTask, useUpdateTask } from '../hooks/useTasks';
-import { PriorityPill, StatusPill } from './taskPills';
+import { Pill, PriorityPill, StatusPill } from './taskPills';
 import { STATUS_LABEL } from '../taskLabels';
 
 export interface TaskCardProps {
@@ -29,6 +29,16 @@ export function TaskCard({ task, onEdit }: TaskCardProps) {
     );
   };
 
+  const toggleSubtask = (subtaskId: string) => {
+    const subtasks = task.subtasks.map((s) =>
+      s.id === subtaskId ? { ...s, completed: !s.completed } : s,
+    );
+    updateMutation.mutate(
+      { id: task.id, payload: { subtasks } },
+      { onError: () => toast.error('Gagal memperbarui subtask') },
+    );
+  };
+
   const handleDelete = () => {
     deleteMutation.mutate(task.id, {
       onSuccess: () => {
@@ -38,6 +48,8 @@ export function TaskCard({ task, onEdit }: TaskCardProps) {
       onError: () => toast.error('Gagal menghapus task'),
     });
   };
+
+  const doneSubtasks = task.subtasks.filter((s) => s.completed).length;
 
   return (
     <div className="flex flex-col gap-3 rounded-[6px] border border-transparent px-3 py-3 transition-colors hover:border-pebble hover:bg-cloud sm:flex-row sm:items-start sm:gap-4">
@@ -53,10 +65,56 @@ export function TaskCard({ task, onEdit }: TaskCardProps) {
           </p>
           <StatusPill status={task.status} />
           <PriorityPill priority={task.priority} />
+          {task.subtasks.length > 0 && (
+            <Pill className="bg-cloud text-slate">
+              {doneSubtasks}/{task.subtasks.length}
+            </Pill>
+          )}
+          {task.reminder_at && (
+            <Pill className="gap-1 bg-sky text-ink">
+              <AlarmClock size={12} />
+              {formatDateTime(task.reminder_at)}
+            </Pill>
+          )}
         </div>
 
         {task.description && (
           <p className="mt-1 line-clamp-2 text-caption text-slate">{task.description}</p>
+        )}
+
+        {task.subtasks.length > 0 && (
+          <ul className="mt-2 flex flex-col gap-1">
+            {task.subtasks.map((subtask) => (
+              <li key={subtask.id}>
+                <button
+                  type="button"
+                  onClick={() => toggleSubtask(subtask.id)}
+                  disabled={updateMutation.isPending}
+                  aria-pressed={subtask.completed}
+                  className="flex w-full items-start gap-2 rounded-[6px] text-left text-caption disabled:cursor-not-allowed"
+                >
+                  <span
+                    className={cn(
+                      'mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-[4px] border',
+                      subtask.completed
+                        ? 'border-monday-violet bg-monday-violet text-snow'
+                        : 'border-pebble bg-snow text-transparent',
+                    )}
+                  >
+                    <Check size={12} />
+                  </span>
+                  <span
+                    className={cn(
+                      'min-w-0 break-words text-slate',
+                      subtask.completed && 'text-iron line-through',
+                    )}
+                  >
+                    {subtask.title}
+                  </span>
+                </button>
+              </li>
+            ))}
+          </ul>
         )}
 
         <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-caption text-iron">

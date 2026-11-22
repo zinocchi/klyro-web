@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
+import { Check, Plus, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '../../../components/ui/Button';
 import { DatePicker } from '../../../components/ui/DatePicker';
@@ -8,7 +9,8 @@ import { Input } from '../../../components/ui/Input';
 import { Modal } from '../../../components/ui/Modal';
 import { Select } from '../../../components/ui/Select';
 import { ApiError } from '../../../lib/api';
-import { TASK_PRIORITIES, TASK_STATUSES, type Task } from '../../../types/api.types';
+import { cn, toDateTimeInputValue } from '../../../lib/utils';
+import { TASK_PRIORITIES, TASK_STATUSES, type Subtask, type Task } from '../../../types/api.types';
 import { useCreateTask, useUpdateTask } from '../hooks/useTasks';
 import { taskFormSchema, type TaskFormValues } from '../schemas/task.schema';
 import { PRIORITY_LABEL, STATUS_LABEL } from '../taskLabels';
@@ -38,6 +40,8 @@ export function TaskFormModal({ open, onClose, task }: TaskFormModalProps) {
 
 function TaskForm({ task, onClose }: { task?: Task | null; onClose: () => void }) {
   const [formError, setFormError] = useState<string | null>(null);
+  const [subtasks, setSubtasks] = useState<Subtask[]>(task?.subtasks ?? []);
+  const [draft, setDraft] = useState('');
   const createMutation = useCreateTask();
   const updateMutation = useUpdateTask();
 
@@ -56,9 +60,25 @@ function TaskForm({ task, onClose }: { task?: Task | null; onClose: () => void }
           due_date: task.due_date ?? '',
           status: task.status,
           priority: task.priority,
+          reminder_at: toDateTimeInputValue(task.reminder_at),
         }
       : EMPTY,
   });
+
+  const addSubtask = () => {
+    const title = draft.trim();
+    if (!title || subtasks.length >= 100) return;
+    setSubtasks((prev) => [...prev, { id: crypto.randomUUID(), title, completed: false }]);
+    setDraft('');
+  };
+
+  const toggleSubtask = (id: string) =>
+    setSubtasks((prev) =>
+      prev.map((s) => (s.id === id ? { ...s, completed: !s.completed } : s)),
+    );
+
+  const removeSubtask = (id: string) =>
+    setSubtasks((prev) => prev.filter((s) => s.id !== id));
 
   const onSubmit = (values: TaskFormValues) => {
     setFormError(null);
@@ -68,6 +88,8 @@ function TaskForm({ task, onClose }: { task?: Task | null; onClose: () => void }
       due_date: values.due_date || undefined,
       status: values.status,
       priority: values.priority,
+      subtasks,
+      reminder_at: values.reminder_at ? new Date(values.reminder_at).toISOString() : null,
     };
 
     const onError = (error: unknown) => {
@@ -160,6 +182,85 @@ function TaskForm({ task, onClose }: { task?: Task | null; onClose: () => void }
             </option>
           ))}
         </Select>
+      </div>
+
+      <div className="flex flex-col gap-2">
+        <span className="text-body-sm font-medium text-ink">Subtasks</span>
+        {subtasks.length > 0 && (
+          <ul className="flex flex-col gap-1">
+            {subtasks.map((subtask) => (
+              <li
+                key={subtask.id}
+                className="flex items-center gap-2 rounded-[6px] border border-pebble px-2 py-1.5"
+              >
+                <button
+                  type="button"
+                  onClick={() => toggleSubtask(subtask.id)}
+                  aria-pressed={subtask.completed}
+                  aria-label={`Toggle ${subtask.title}`}
+                  className={cn(
+                    'flex h-4 w-4 shrink-0 items-center justify-center rounded-[4px] border',
+                    subtask.completed
+                      ? 'border-monday-violet bg-monday-violet text-snow'
+                      : 'border-pebble bg-snow text-transparent',
+                  )}
+                >
+                  <Check size={12} />
+                </button>
+                <span
+                  className={cn(
+                    'min-w-0 flex-1 break-words text-caption text-slate',
+                    subtask.completed && 'text-iron line-through',
+                  )}
+                >
+                  {subtask.title}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => removeSubtask(subtask.id)}
+                  aria-label={`Remove ${subtask.title}`}
+                  className="rounded-full p-1 text-iron transition-colors hover:bg-cloud hover:text-[#e2445c]"
+                >
+                  <X size={14} />
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+        <div className="flex items-start gap-2">
+          <Input
+            aria-label="Subtask title"
+            placeholder="Tambah langkah kecil…"
+            maxLength={200}
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                addSubtask();
+              }
+            }}
+          />
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={addSubtask}
+            disabled={!draft.trim()}
+            aria-label="Tambah subtask"
+          >
+            <Plus size={16} />
+          </Button>
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-2">
+        <Input
+          type="datetime-local"
+          label="Reminder (opsional)"
+          error={errors.reminder_at?.message}
+          {...register('reminder_at')}
+        />
+        <p className="text-caption text-iron">Kosongkan bila tidak perlu pengingat.</p>
       </div>
 
       <div className="mt-2 flex justify-end gap-3">

@@ -12,6 +12,9 @@ export const noteFormSchema = z.object({
     .min(1, 'Isi catatan wajib diisi')
     .max(5000, 'Isi catatan terlalu panjang'),
   is_pinned: z.boolean(),
+  tag: z.string().trim().max(50, 'Tag terlalu panjang').optional().or(z.literal('')),
+  /** `datetime-local` value, converted to ISO on submit. */
+  remind_at: z.string().optional(),
 });
 
 export type NoteFormValues = z.infer<typeof noteFormSchema>;

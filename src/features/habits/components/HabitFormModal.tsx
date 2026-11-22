@@ -44,6 +44,7 @@ function HabitForm({ habit, onClose }: { habit?: Habit | null; onClose: () => vo
     defaultValues: {
       title: habit?.title ?? '',
       target_days: habit?.target_days ?? [],
+      reminder_time: habit?.reminder_time ?? '',
     },
   });
 
@@ -67,6 +68,8 @@ function HabitForm({ habit, onClose }: { habit?: Habit | null; onClose: () => vo
             setError('title', { message: field.message });
           } else if (field.field.startsWith('target_days')) {
             setError('target_days', { message: field.message });
+          } else if (field.field === 'reminder_time') {
+            setError('reminder_time', { message: field.message });
           }
         }
         setFormError(error.message);
@@ -79,7 +82,14 @@ function HabitForm({ habit, onClose }: { habit?: Habit | null; onClose: () => vo
 
     if (habit) {
       updateMutation.mutate(
-        { id: habit.id, payload: { title: values.title, target_days: values.target_days } },
+        {
+          id: habit.id,
+          payload: {
+            title: values.title,
+            target_days: values.target_days,
+            reminder_time: values.reminder_time || null,
+          },
+        },
         {
           onSuccess: () => {
             toast.success('Habit diperbarui');
@@ -92,7 +102,11 @@ function HabitForm({ habit, onClose }: { habit?: Habit | null; onClose: () => vo
     }
 
     createMutation.mutate(
-      { title: values.title, target_days: values.target_days },
+      {
+        title: values.title,
+        target_days: values.target_days,
+        reminder_time: values.reminder_time || null,
+      },
       {
         onSuccess: () => {
           toast.success('Habit dibuat');
@@ -144,6 +158,13 @@ function HabitForm({ habit, onClose }: { habit?: Habit | null; onClose: () => vo
           <p className="text-caption text-[#e05c5c]">{errors.target_days.message}</p>
         )}
       </div>
+
+      <Input
+        type="time"
+        label="Pengingat harian (opsional)"
+        error={errors.reminder_time?.message}
+        {...register('reminder_time')}
+      />
 
       <div className="mt-2 flex justify-end gap-3">
         <Button type="button" variant="secondary" onClick={onClose} disabled={isPending}>

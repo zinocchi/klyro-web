@@ -19,6 +19,8 @@ export const taskFormSchema = z.object({
     .optional(),
   status: z.enum(['PENDING', 'IN_PROGRESS', 'COMPLETED']),
   priority: z.enum(['LOW', 'MEDIUM', 'HIGH']),
+  /** `datetime-local` value, converted to ISO on submit. */
+  reminder_at: z.string().optional(),
 });
 
 export type TaskFormValues = z.infer<typeof taskFormSchema>;

@@ -8,6 +8,7 @@ import type { Note } from '../../../types/api.types';
 import { NoteCard } from '../components/NoteCard';
 import { NoteFormModal } from '../components/NoteFormModal';
 import { useNotes } from '../hooks/useNotes';
+import { tagTone } from '../tagLabels';
 
 const SEARCH_DEBOUNCE_MS = 300;
 
@@ -15,6 +16,7 @@ export function NotesPage() {
   const [search, setSearch] = useState('');
   const [debounced, setDebounced] = useState('');
   const [pinnedOnly, setPinnedOnly] = useState(false);
+  const [tag, setTag] = useState<string | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState<Note | null>(null);
 
@@ -29,6 +31,8 @@ export function NotesPage() {
   });
 
   const notes = query.data?.notes ?? [];
+  const tags = [...new Set(notes.map((n) => n.tag).filter((t): t is string => Boolean(t)))];
+  const visible = tag ? notes.filter((n) => n.tag === tag) : notes;
 
   const openCreate = () => {
     setEditing(null);
@@ -86,6 +90,38 @@ export function NotesPage() {
         </button>
       </div>
 
+      {tags.length > 0 && (
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            aria-pressed={tag === null}
+            onClick={() => setTag(null)}
+            className={cn(
+              'rounded-full px-3 py-1 text-caption font-medium transition-colors',
+              tag === null
+                ? 'bg-monday-violet text-snow'
+                : 'border border-pebble bg-snow text-slate hover:border-monday-violet',
+            )}
+          >
+            Semua tag
+          </button>
+          {tags.map((t) => (
+            <button
+              key={t}
+              type="button"
+              aria-pressed={tag === t}
+              onClick={() => setTag(tag === t ? null : t)}
+              className={cn(
+                'rounded-full px-3 py-1 text-caption font-medium transition-colors',
+                tag === t ? 'bg-monday-violet text-snow' : tagTone(t),
+              )}
+            >
+              {t}
+            </button>
+          ))}
+        </div>
+      )}
+
       {query.isPending ? (
         <div className="flex justify-center py-16">
           <Spinner size="lg" label="Memuat catatan" />
@@ -94,13 +130,13 @@ export function NotesPage() {
         <p className="rounded-[24px] border border-mist bg-snow p-8 text-center text-body-sm text-[#e05c5c]">
           Gagal memuat catatan. {query.error?.message}
         </p>
-      ) : notes.length === 0 ? (
+      ) : visible.length === 0 ? (
         <EmptyState
           icon={<StickyNote size={32} />}
-          title={debounced || pinnedOnly ? 'Tidak ada catatan cocok' : 'Belum ada catatan'}
+          title={debounced || pinnedOnly || tag ? 'Tidak ada catatan cocok' : 'Belum ada catatan'}
           description={
-            debounced || pinnedOnly
-              ? 'Coba kata kunci lain atau matikan filter sematan.'
+            debounced || pinnedOnly || tag
+              ? 'Coba kata kunci lain atau matikan filter.'
               : 'Buat catatan pertama untuk menyimpan ide.'
           }
           action={
@@ -112,7 +148,7 @@ export function NotesPage() {
         />
       ) : (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {notes.map((note) => (
+          {visible.map((note) => (
             <NoteCard key={note.id} note={note} onEdit={openEdit} />
           ))}
         </div>

@@ -1,11 +1,13 @@
 import { useState } from 'react';
-import { Flame, Pencil, Trash2 } from 'lucide-react';
+import { Clock, Flame, Pencil, Trash2, Trophy } from 'lucide-react';
 import { toast } from 'sonner';
+import { Badge } from '../../../components/ui/Badge';
 import { ConfirmModal } from '../../../components/ui/ConfirmModal';
 import { cn } from '../../../lib/utils';
 import type { Habit } from '../../../types/api.types';
 import { useCheckInHabit, useDeleteHabit } from '../hooks/useHabits';
 import { DAY_SHORT } from '../habitLabels';
+import { HabitHeatmap } from './HabitHeatmap';
 
 export interface HabitCardProps {
   habit: Habit;
@@ -44,10 +46,22 @@ export function HabitCard({ habit, date, onEdit }: HabitCardProps) {
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <h3 className="break-words text-body font-medium text-ink">{habit.title}</h3>
-          <p className="mt-1 flex items-center gap-1 text-caption text-slate">
-            <Flame size={14} className="text-apricot" />
-            {habit.streak_count} day streak
-          </p>
+          <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-caption text-slate">
+            <span className="flex items-center gap-1">
+              <Flame size={14} className="text-apricot" />
+              {habit.streak_count} day streak
+            </span>
+            <span className="flex items-center gap-1">
+              <Trophy size={14} className="text-monday-violet" />
+              Best {habit.best_streak}
+            </span>
+            {habit.reminder_time && (
+              <Badge tone="info" className="gap-1">
+                <Clock size={12} />
+                {habit.reminder_time}
+              </Badge>
+            )}
+          </div>
         </div>
 
         <div className="flex shrink-0 items-center gap-1">
@@ -86,6 +100,8 @@ export function HabitCard({ habit, date, onEdit }: HabitCardProps) {
           );
         })}
       </div>
+
+      <HabitHeatmap recentLogs={habit.recent_logs} />
 
       <button
         type="button"

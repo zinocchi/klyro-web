@@ -12,6 +12,10 @@ export const habitFormSchema = z.object({
     .min(1, 'Pick at least one day')
     .max(7)
     .refine((days) => new Set(days).size === days.length, 'Days must be unique'),
+  /** `HH:mm` 24-hour, or empty. */
+  reminder_time: z
+    .union([z.literal(''), z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, 'Gunakan format HH:mm')])
+    .optional(),
 });
 
 export type HabitFormValues = z.infer<typeof habitFormSchema>;

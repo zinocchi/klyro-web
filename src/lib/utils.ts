@@ -94,6 +94,18 @@ export function formatDate(value: string | Date | null | undefined): string {
   return date ? format(date, 'MMM d, yyyy') : '—';
 }
 
+/** Human friendly date + time, e.g. `Nov 25, 09:00`. */
+export function formatDateTime(value: string | Date | null | undefined): string {
+  const date = parseDate(value);
+  return date ? format(date, 'MMM d, HH:mm') : '—';
+}
+
+/** `YYYY-MM-DDTHH:mm` (local) for `<input type="datetime-local">`. */
+export function toDateTimeInputValue(value: string | Date | null | undefined): string {
+  const date = parseDate(value);
+  return date ? format(date, "yyyy-MM-dd'T'HH:mm") : '';
+}
+
 /** Human friendly date with weekday, e.g. `Sunday, Nov 16, 2026`. */
 export function formatLongDate(value: string | Date | null | undefined): string {
   const date = parseDate(value);

@@ -55,7 +55,19 @@
     "empty": "Belum ada task",
     "emptyDescription": "Tambahkan task pertamamu untuk mulai produktif.",
     "newTask": "Task baru",
-    "loadError": "Gagal memuat task."
+    "loadError": "Gagal memuat task.",
+    "search": "Cari task",
+    "searchPlaceholder": "Cari judul atau deskripsi task",
+    "noMatch": "Tidak ada task yang cocok dengan pencarianmu.",
+    "subtasks": "Subtask",
+    "subtaskPlaceholder": "Tambah langkah kecil…",
+    "addSubtask": "Tambah subtask",
+    "removeSubtask": "Hapus subtask",
+    "toggleSubtask": "Tandai subtask selesai",
+    "subtaskProgress": "{{done}}/{{total}} subtask selesai",
+    "reminder": "Pengingat",
+    "reminderHint": "Kosongkan bila tidak perlu pengingat.",
+    "reminderBadge": "Pengingat {{time}}"
   },
   "habits": {
     "title": "Habits",
@@ -63,7 +75,15 @@
     "empty": "Belum ada habit",
     "emptyDescription": "Buat habit dan mulai bangun streak.",
     "newHabit": "Habit baru",
-    "loadError": "Gagal memuat habit."
+    "loadError": "Gagal memuat habit.",
+    "currentStreak": "{{count}} hari beruntun",
+    "bestStreak": "Terbaik {{count}}",
+    "bestStreakLabel": "Best streak",
+    "heatmapTitle": "30 hari terakhir",
+    "heatmapAria": "{{done}} dari 30 hari terakhir selesai",
+    "reminder": "Pengingat harian",
+    "reminderHint": "Format 24 jam, contoh 07:30.",
+    "reminderBadge": "Pengingat {{time}}"
   },
   "money": {
     "title": "Money",
@@ -104,7 +124,20 @@
     "empty": "Belum ada catatan",
     "emptyDescription": "Tulis catatan pertamamu sekarang.",
     "newNote": "Catatan baru",
-    "loadError": "Gagal memuat catatan."
+    "loadError": "Gagal memuat catatan.",
+    "tag": "Tag",
+    "tagPlaceholder": "Pilih atau tulis tag sendiri…",
+    "tagAll": "Semua tag",
+    "tags": {
+      "ide": "Ide",
+      "kerja": "Kerja",
+      "pribadi": "Pribadi",
+      "keuangan": "Keuangan"
+    },
+    "checklistHint": "Gunakan - [ ] dan - [x] untuk checklist cepat.",
+    "reminder": "Pengingat catatan",
+    "reminderHint": "Kosongkan bila tidak perlu pengingat.",
+    "reminderBadge": "Pengingat {{time}}"
   },
   "settings": {
     "title": "Settings",
