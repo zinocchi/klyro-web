@@ -1,10 +1,5 @@
 import type { TransactionType } from '../../types/api.types';
 
-export const TYPE_LABEL: Record<TransactionType, string> = {
-  INCOME: 'Pemasukan',
-  EXPENSE: 'Pengeluaran',
-};
-
 export const TYPE_TONE: Record<TransactionType, string> = {
   INCOME: 'bg-mint text-ink',
   EXPENSE: 'bg-[#ffd4d4] text-ink',
@@ -18,6 +13,16 @@ export const INCOME_CATEGORIES = ['Gaji', 'Freelance'];
 export const CATEGORY_PRESETS: Record<TransactionType, string[]> = {
   INCOME: INCOME_CATEGORIES,
   EXPENSE: EXPENSE_CATEGORIES,
+};
+
+/** Display-only translations for preset categories; the stored value stays put. */
+export const CATEGORY_LABEL_KEYS: Record<string, string> = {
+  Makan: 'money.presets.Makan',
+  Transport: 'money.presets.Transport',
+  Tagihan: 'money.presets.Tagihan',
+  Jajan: 'money.presets.Jajan',
+  Gaji: 'money.presets.Gaji',
+  Freelance: 'money.presets.Freelance',
 };
 
 /** Budget usage colour coding: <80% mint, 80–99% apricot, ≥100% red. */

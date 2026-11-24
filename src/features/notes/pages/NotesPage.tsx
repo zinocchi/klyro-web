@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Pin, PinOff, Plus, Search, StickyNote } from 'lucide-react';
 import { Button } from '../../../components/ui/Button';
 import { EmptyState } from '../../../components/ui/EmptyState';
@@ -8,11 +9,12 @@ import type { Note } from '../../../types/api.types';
 import { NoteCard } from '../components/NoteCard';
 import { NoteFormModal } from '../components/NoteFormModal';
 import { useNotes } from '../hooks/useNotes';
-import { tagTone } from '../tagLabels';
+import { TAG_LABEL_KEYS, tagTone } from '../tagLabels';
 
 const SEARCH_DEBOUNCE_MS = 300;
 
 export function NotesPage() {
+  const { t, i18n } = useTranslation();
   const [search, setSearch] = useState('');
   const [debounced, setDebounced] = useState('');
   const [pinnedOnly, setPinnedOnly] = useState(false);
@@ -34,6 +36,12 @@ export function NotesPage() {
   const tags = [...new Set(notes.map((n) => n.tag).filter((t): t is string => Boolean(t)))];
   const visible = tag ? notes.filter((n) => n.tag === tag) : notes;
 
+  /** Preset tags have a translation; free-form tags render as typed. */
+  const tagLabel = (value: string) => {
+    const key = TAG_LABEL_KEYS[value.trim().toLowerCase()];
+    return key && i18n.exists(key) ? t(key) : value;
+  };
+
   const openCreate = () => {
     setEditing(null);
     setModalOpen(true);
@@ -48,12 +56,12 @@ export function NotesPage() {
     <div className="flex flex-col gap-6">
       <header className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
         <div className="min-w-0">
-          <h1 className="break-words text-heading-sm font-medium text-ink">Notes</h1>
-          <p className="mt-1 text-body-sm text-slate">Simpan ide dan catatan cepat.</p>
+          <h1 className="break-words text-heading-sm font-medium text-ink">{t('notes.title')}</h1>
+          <p className="mt-1 text-body-sm text-slate">{t('notes.subtitle')}</p>
         </div>
         <Button onClick={openCreate} className="w-full sm:w-auto">
           <Plus size={16} />
-          Catatan
+          {t('notes.newNote')}
         </Button>
       </header>
 
@@ -68,8 +76,8 @@ export function NotesPage() {
             type="search"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Cari judul atau isi catatan…"
-            aria-label="Cari catatan"
+            placeholder={t('notes.searchPlaceholder')}
+            aria-label={t('notes.search')}
             className="min-h-[44px] w-full rounded-[6px] border border-pebble bg-snow py-3 pr-4 pl-10 text-body-sm text-ink placeholder:text-iron focus:border-monday-violet focus:outline-none focus:ring-1 focus:ring-monday-violet"
           />
         </div>
@@ -86,7 +94,7 @@ export function NotesPage() {
           )}
         >
           {pinnedOnly ? <Pin size={16} /> : <PinOff size={16} />}
-          Yang disematkan
+          {t('notes.pinned')}
         </button>
       </div>
 
@@ -103,7 +111,7 @@ export function NotesPage() {
                 : 'border border-pebble bg-snow text-slate hover:border-monday-violet',
             )}
           >
-            Semua tag
+            {t('notes.tagAll')}
           </button>
           {tags.map((t) => (
             <button
@@ -116,7 +124,7 @@ export function NotesPage() {
                 tag === t ? 'bg-monday-violet text-snow' : tagTone(t),
               )}
             >
-              {t}
+              {tagLabel(t)}
             </button>
           ))}
         </div>
@@ -124,25 +132,25 @@ export function NotesPage() {
 
       {query.isPending ? (
         <div className="flex justify-center py-16">
-          <Spinner size="lg" label="Memuat catatan" />
+          <Spinner size="lg" />
         </div>
       ) : query.isError ? (
         <p className="rounded-[24px] border border-mist bg-snow p-8 text-center text-body-sm text-[#e05c5c]">
-          Gagal memuat catatan. {query.error?.message}
+          {t('notes.loadError')} {query.error?.message}
         </p>
       ) : visible.length === 0 ? (
         <EmptyState
           icon={<StickyNote size={32} />}
-          title={debounced || pinnedOnly || tag ? 'Tidak ada catatan cocok' : 'Belum ada catatan'}
+          title={debounced || pinnedOnly || tag ? t('notes.noMatch') : t('notes.empty')}
           description={
             debounced || pinnedOnly || tag
-              ? 'Coba kata kunci lain atau matikan filter.'
-              : 'Buat catatan pertama untuk menyimpan ide.'
+              ? t('notes.noMatchDescription')
+              : t('notes.emptyDescription')
           }
           action={
             <Button onClick={openCreate} className="w-full sm:w-auto">
               <Plus size={16} />
-              Catatan
+              {t('notes.newNote')}
             </Button>
           }
         />

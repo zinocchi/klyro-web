@@ -1,14 +1,18 @@
+import { useTranslation } from 'react-i18next';
 import { cn } from '../../lib/utils';
 
 export interface SpinnerProps {
   size?: 'sm' | 'md' | 'lg';
   className?: string;
+  /** Overrides the default localized "Loading" screen-reader label. */
   label?: string;
 }
 
 const sizes = { sm: 'h-4 w-4', md: 'h-6 w-6', lg: 'h-10 w-10' };
 
-export function Spinner({ size = 'md', className, label = 'Loading' }: SpinnerProps) {
+export function Spinner({ size = 'md', className, label }: SpinnerProps) {
+  const { t } = useTranslation();
+
   return (
     <span role="status" aria-live="polite" className="inline-flex items-center gap-2">
       <span
@@ -21,7 +25,7 @@ export function Spinner({ size = 'md', className, label = 'Loading' }: SpinnerPr
           className,
         )}
       />
-      <span className="sr-only">{label}</span>
+      <span className="sr-only">{label ?? t('common.loading')}</span>
     </span>
   );
 }

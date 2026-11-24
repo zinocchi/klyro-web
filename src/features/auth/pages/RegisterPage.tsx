@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import { useMutation } from '@tanstack/react-query';
 import { toast } from 'sonner';
@@ -7,11 +8,14 @@ import { Button } from '../../../components/ui/Button';
 import { Input } from '../../../components/ui/Input';
 import { Spinner } from '../../../components/ui/Spinner';
 import { KlyroLogo } from '../../../components/brand/KlyroLogo';
+import { useFieldError } from '../../../i18n/useFieldError';
 import { useAuthStore } from '../../../stores/authStore';
 import { ApiError, register as registerUser } from '../api/auth.api';
 import { registerSchema, type RegisterInput } from '../schemas/auth.schema';
 
 export function RegisterPage() {
+  const { t } = useTranslation();
+  const translateError = useFieldError();
   const navigate = useNavigate();
   const setAuth = useAuthStore((s) => s.setAuth);
 
@@ -30,7 +34,9 @@ export function RegisterPage() {
     onSuccess: (data) => {
       setAuth(data.token, data.user);
       toast.success(
-        data.user.name ? `Akun dibuat. Selamat bergabung, ${data.user.name}!` : 'Akun berhasil dibuat!',
+        data.user.name
+          ? t('auth.register.success', { name: data.user.name })
+          : t('auth.register.successFallback'),
       );
       navigate('/dashboard', { replace: true });
     },
@@ -44,7 +50,7 @@ export function RegisterPage() {
         toast.error(error.message);
         return;
       }
-      toast.error('Gagal membuat akun. Coba lagi sebentar lagi.');
+      toast.error(t('auth.register.error'));
     },
   });
 
@@ -55,9 +61,9 @@ export function RegisterPage() {
       <div className="w-full max-w-md rounded-[24px] border border-mist bg-snow p-6 shadow-[var(--shadow-xl)] sm:p-8">
         <div className="mb-6 flex flex-col items-center gap-3 text-center">
           <KlyroLogo height={36} />
-          <h1 className="text-heading-sm font-medium text-ink">Create your account</h1>
+          <h1 className="text-heading-sm font-medium text-ink">{t('auth.register.title')}</h1>
           <p className="text-body-sm text-slate">
-            Start tracking tasks and habits with Klyro.
+            {t('auth.register.subtitle')}
           </p>
         </div>
 
@@ -65,38 +71,38 @@ export function RegisterPage() {
           <Input
             type="text"
             autoComplete="name"
-            placeholder="Fikri"
-            label="Name"
-            error={errors.name?.message}
+            placeholder={t('auth.register.namePlaceholder')}
+            label={t('auth.register.name')}
+            error={translateError(errors.name?.message)}
             {...register('name')}
           />
           <Input
             type="email"
             autoComplete="email"
             placeholder="you@example.com"
-            label="Email"
-            error={errors.email?.message}
+            label={t('auth.register.email')}
+            error={translateError(errors.email?.message)}
             {...register('email')}
           />
           <Input
             type="password"
             autoComplete="new-password"
-            placeholder="At least 8 characters"
-            label="Password"
-            error={errors.password?.message}
+            placeholder={t('auth.register.passwordPlaceholder')}
+            label={t('auth.register.password')}
+            error={translateError(errors.password?.message)}
             {...register('password')}
           />
 
           <Button type="submit" size="lg" fullWidth isLoading={mutation.isPending}>
             {mutation.isPending ? <Spinner size="sm" /> : null}
-            Create account
+            {t('auth.register.submit')}
           </Button>
         </form>
 
         <p className="mt-6 text-center text-body-sm text-slate">
-          Already registered?{' '}
+          {t('auth.register.haveAccount')}{' '}
           <Link to="/login" className="font-medium text-monday-violet hover:underline">
-            Sign in
+            {t('auth.register.signIn')}
           </Link>
         </p>
       </div>

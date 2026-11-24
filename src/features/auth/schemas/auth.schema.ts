@@ -1,19 +1,19 @@
 import { z } from 'zod';
 
 const email = z
-  .email('Invalid email address')
-  .max(255, 'Email is too long');
+  .email('validation.emailInvalid')
+  .max(255, 'validation.emailTooLong');
 
 const password = z
   .string()
-  .min(8, 'Password must be at least 8 characters')
-  .max(72, 'Password is too long');
+  .min(8, 'validation.passwordMin')
+  .max(72, 'validation.passwordTooLong');
 
 const name = z
   .string()
   .trim()
-  .min(2, 'Name must be at least 2 characters')
-  .max(100, 'Name is too long');
+  .min(2, 'validation.nameMin')
+  .max(100, 'validation.nameMax');
 
 export const loginSchema = z.object({
   email,

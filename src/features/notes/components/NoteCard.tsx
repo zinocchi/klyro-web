@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { AlarmClock, Check, Pin, PinOff, Pencil, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Badge } from '../../../components/ui/Badge';
@@ -6,7 +7,7 @@ import { ConfirmModal } from '../../../components/ui/ConfirmModal';
 import { cn, formatDate, formatDateTime } from '../../../lib/utils';
 import type { Note } from '../../../types/api.types';
 import { useDeleteNote, useUpdateNote } from '../hooks/useNotes';
-import { tagTone } from '../tagLabels';
+import { TAG_LABEL_KEYS, tagTone } from '../tagLabels';
 
 export interface NoteCardProps {
   note: Note;
@@ -14,16 +15,22 @@ export interface NoteCardProps {
 }
 
 export function NoteCard({ note, onEdit }: NoteCardProps) {
+  const { t, i18n } = useTranslation();
   const [confirmOpen, setConfirmOpen] = useState(false);
   const updateMutation = useUpdateNote();
   const deleteMutation = useDeleteNote();
+
+  /** Preset tags have a translation; free-form tags render as typed. */
+  const tagKey = note.tag ? TAG_LABEL_KEYS[note.tag.trim().toLowerCase()] : undefined;
+  const tagLabel = tagKey && i18n.exists(tagKey) ? t(tagKey) : note.tag;
 
   const togglePin = () => {
     updateMutation.mutate(
       { id: note.id, payload: { is_pinned: !note.is_pinned } },
       {
-        onSuccess: () => toast.success(note.is_pinned ? 'Catatan dilepas' : 'Catatan disematkan'),
-        onError: () => toast.error('Gagal memperbarui catatan'),
+        onSuccess: () =>
+          toast.success(note.is_pinned ? t('notes.toast.unpinned') : t('notes.toast.pinned')),
+        onError: () => toast.error(t('notes.toast.updateError')),
       },
     );
   };
@@ -32,9 +39,9 @@ export function NoteCard({ note, onEdit }: NoteCardProps) {
     deleteMutation.mutate(note.id, {
       onSuccess: () => {
         setConfirmOpen(false);
-        toast.success('Catatan dihapus');
+        toast.success(t('notes.toast.deleted'));
       },
-      onError: () => toast.error('Gagal menghapus catatan'),
+      onError: () => toast.error(t('notes.toast.deleteError')),
     });
   };
 
@@ -49,7 +56,7 @@ export function NoteCard({ note, onEdit }: NoteCardProps) {
         <div className="min-w-0">
           <h3 className="break-words text-body font-medium text-ink">{note.title}</h3>
           {note.tag && (
-            <Badge className={cn('mt-1', tagTone(note.tag))}>{note.tag}</Badge>
+            <Badge className={cn('mt-1', tagTone(note.tag))}>{tagLabel}</Badge>
           )}
         </div>
         <button
@@ -57,7 +64,11 @@ export function NoteCard({ note, onEdit }: NoteCardProps) {
           onClick={togglePin}
           disabled={updateMutation.isPending}
           aria-pressed={note.is_pinned}
-          aria-label={note.is_pinned ? `Unpin ${note.title}` : `Pin ${note.title}`}
+          aria-label={
+            note.is_pinned
+              ? t('notes.unpinAria', { title: note.title })
+              : t('notes.pinAria', { title: note.title })
+          }
           className={cn(
             'shrink-0 rounded-full p-2 transition-colors',
             note.is_pinned
@@ -85,7 +96,7 @@ export function NoteCard({ note, onEdit }: NoteCardProps) {
           <button
             type="button"
             onClick={() => onEdit(note)}
-            aria-label={`Edit ${note.title}`}
+            aria-label={t('notes.editAria', { title: note.title })}
             className="rounded-full p-2 text-slate transition-colors hover:bg-cloud hover:text-monday-violet"
           >
             <Pencil size={16} />
@@ -93,7 +104,7 @@ export function NoteCard({ note, onEdit }: NoteCardProps) {
           <button
             type="button"
             onClick={() => setConfirmOpen(true)}
-            aria-label={`Delete ${note.title}`}
+            aria-label={t('notes.deleteAria', { title: note.title })}
             className="rounded-full p-2 text-slate transition-colors hover:bg-cloud hover:text-[#e2445c]"
           >
             <Trash2 size={16} />
@@ -105,8 +116,8 @@ export function NoteCard({ note, onEdit }: NoteCardProps) {
         isOpen={confirmOpen}
         onClose={() => setConfirmOpen(false)}
         onConfirm={handleDelete}
-        title="Hapus catatan?"
-        description={`"${note.title}" akan dihapus permanen.`}
+        title={t('notes.deleteTitle')}
+        description={t('notes.deleteDescription', { title: note.title })}
         isLoading={deleteMutation.isPending}
       />
     </article>

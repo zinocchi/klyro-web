@@ -1,16 +1,18 @@
 import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm, useWatch } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { Button } from '../../../components/ui/Button';
 import { DatePicker } from '../../../components/ui/DatePicker';
 import { Input } from '../../../components/ui/Input';
 import { Modal } from '../../../components/ui/Modal';
 import { ApiError } from '../../../lib/api';
+import { useFieldError } from '../../../i18n/useFieldError';
 import { cn, formatIDR, toDateKey } from '../../../lib/utils';
 import type { Transaction, TransactionType } from '../../../types/api.types';
 import { useCreateTransaction, useUpdateTransaction } from '../hooks/useTransactions';
-import { CATEGORY_PRESETS, TYPE_LABEL } from '../moneyLabels';
+import { CATEGORY_LABEL_KEYS, CATEGORY_PRESETS } from '../moneyLabels';
 import { transactionFormSchema, type TransactionFormValues } from '../schemas/transaction.schema';
 
 export interface TransactionFormModalProps {
@@ -20,8 +22,13 @@ export interface TransactionFormModalProps {
 }
 
 export function TransactionFormModal({ open, onClose, transaction }: TransactionFormModalProps) {
+  const { t } = useTranslation();
   return (
-    <Modal open={open} onClose={onClose} title={transaction ? 'Edit transaksi' : 'Transaksi baru'}>
+    <Modal
+      open={open}
+      onClose={onClose}
+      title={transaction ? t('money.form.editTitle') : t('money.form.newTitle')}
+    >
       {/* Remount per record so the form starts from that record's values. */}
       <TransactionForm
         key={transaction?.id ?? 'new'}
@@ -39,6 +46,8 @@ function TransactionForm({
   transaction?: Transaction | null;
   onClose: () => void;
 }) {
+  const { t } = useTranslation();
+  const translateError = useFieldError();
   const [formError, setFormError] = useState<string | null>(null);
   const createMutation = useCreateTransaction();
   const updateMutation = useUpdateTransaction();
@@ -95,8 +104,8 @@ function TransactionForm({
         toast.error(error.message);
         return;
       }
-      setFormError('Terjadi kesalahan');
-      toast.error('Terjadi kesalahan');
+      setFormError(t('common.genericError'));
+      toast.error(t('common.genericError'));
     };
 
     if (transaction) {
@@ -104,7 +113,7 @@ function TransactionForm({
         { id: transaction.id, payload },
         {
           onSuccess: () => {
-            toast.success('Transaksi diperbarui');
+            toast.success(t('money.form.updated'));
             onClose();
           },
           onError,
@@ -115,7 +124,7 @@ function TransactionForm({
 
     createMutation.mutate(payload, {
       onSuccess: () => {
-        toast.success('Transaksi ditambahkan');
+        toast.success(t('money.form.created'));
         onClose();
       },
       onError,
@@ -131,7 +140,7 @@ function TransactionForm({
       )}
 
       <div className="flex flex-col gap-2">
-        <span className="text-body-sm font-medium text-ink">Tipe</span>
+        <span className="text-body-sm font-medium text-ink">{t('money.form.type')}</span>
         <div className="grid grid-cols-2 gap-2">
           {(['EXPENSE', 'INCOME'] as TransactionType[]).map((option) => (
             <button
@@ -146,28 +155,30 @@ function TransactionForm({
                   : 'border border-pebble bg-snow text-slate hover:border-monday-violet',
               )}
             >
-              {TYPE_LABEL[option]}
+              {t(`money.type.${option}`)}
             </button>
           ))}
         </div>
       </div>
 
       <Input
-        label="Nominal (Rp)"
+        label={t('money.form.amount')}
         type="number"
         inputMode="numeric"
         min={1}
         step={1}
-        placeholder="25000"
-        error={errors.amount?.message}
+        placeholder={t('money.form.amountPlaceholder')}
+        error={translateError(errors.amount?.message)}
         {...register('amount', { valueAsNumber: true })}
       />
       <p className="-mt-2 text-caption text-iron">
-        {Number.isFinite(amount) && amount > 0 ? formatIDR(amount) : 'Masukkan nominal rupiah tanpa titik'}
+        {Number.isFinite(amount) && amount > 0
+          ? formatIDR(amount)
+          : t('money.form.amountHint')}
       </p>
 
       <div className="flex flex-col gap-2">
-        <span className="text-body-sm font-medium text-ink">Kategori</span>
+        <span className="text-body-sm font-medium text-ink">{t('money.form.category')}</span>
         <div className="flex flex-wrap gap-2">
           {presets.map((preset) => (
             <button
@@ -182,21 +193,21 @@ function TransactionForm({
                   : 'bg-cloud text-slate hover:text-ink',
               )}
             >
-              {preset}
+              {CATEGORY_LABEL_KEYS[preset] ? t(CATEGORY_LABEL_KEYS[preset]) : preset}
             </button>
           ))}
         </div>
         <Input
-          placeholder="Atau ketik kategori lain"
-          error={errors.category?.message}
+          placeholder={t('money.form.categoryPlaceholder')}
+          error={translateError(errors.category?.message)}
           {...register('category')}
         />
       </div>
 
       <Input
-        label="Catatan"
-        placeholder="Opsional"
-        error={errors.note?.message}
+        label={t('money.form.note')}
+        placeholder={t('money.form.notePlaceholder')}
+        error={translateError(errors.note?.message)}
         {...register('note')}
       />
 
@@ -205,13 +216,13 @@ function TransactionForm({
         name="date"
         render={({ field }) => (
           <DatePicker
-            label="Tanggal"
-            placeholder="Pilih tanggal"
+            label={t('money.form.date')}
+            placeholder={t('common.selectDate')}
             clearable
             maxDate={toDateKey()}
             value={field.value ?? ''}
             onChange={field.onChange}
-            error={errors.date?.message}
+            error={translateError(errors.date?.message)}
           />
         )}
       />
@@ -224,10 +235,10 @@ function TransactionForm({
           disabled={isPending}
           className="w-full sm:w-auto"
         >
-          Batal
+          {t('common.cancel')}
         </Button>
         <Button type="submit" isLoading={isPending} className="w-full sm:w-auto">
-          {transaction ? 'Simpan' : 'Tambah'}
+          {transaction ? t('money.form.save') : t('money.form.create')}
         </Button>
       </div>
     </form>

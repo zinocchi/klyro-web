@@ -27,23 +27,8 @@ import {
   subYears,
 } from 'date-fns';
 import { Calendar, ChevronLeft, ChevronRight, X } from 'lucide-react';
-import { cn, parseDate, toDateKey, toMonthKey } from '../../lib/utils';
-
-const WEEKDAYS = ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'];
-const MONTH_LABELS = [
-  'Jan',
-  'Feb',
-  'Mar',
-  'Apr',
-  'Mei',
-  'Jun',
-  'Jul',
-  'Agu',
-  'Sep',
-  'Okt',
-  'Nov',
-  'Des',
-];
+import { useTranslation } from 'react-i18next';
+import { cn, dateLocale, formatDate, parseDate, toDateKey, toMonthKey } from '../../lib/utils';
 
 /* ---------- shared pieces ---------- */
 
@@ -152,6 +137,8 @@ function Trigger({
   onClick,
   onClear,
 }: TriggerProps) {
+  const { t } = useTranslation();
+
   return (
     <div className="relative">
       <button
@@ -177,7 +164,7 @@ function Trigger({
         <button
           type="button"
           onClick={onClear}
-          aria-label="Hapus tanggal"
+          aria-label={t('common.clearDate')}
           className="absolute top-1/2 right-2 -translate-y-1/2 rounded-full p-1.5 text-slate transition-colors hover:bg-cloud hover:text-ink"
         >
           <X size={14} />
@@ -252,12 +239,14 @@ export function DatePicker({
   onChange,
   label,
   error,
-  placeholder = 'Pilih tanggal',
+  placeholder,
   disabled,
   clearable = false,
   align = 'start',
   maxDate,
 }: DatePickerProps) {
+  const { t } = useTranslation();
+  const locale = dateLocale();
   const id = useId();
   const anchorRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
@@ -280,7 +269,7 @@ export function DatePicker({
     setOpen(false);
   };
 
-  const text = selected ? format(selected, 'd MMM yyyy') : '';
+  const text = selected ? formatDate(selected) : '';
 
   return (
     <div className="flex w-full flex-col gap-2">
@@ -289,7 +278,7 @@ export function DatePicker({
         <Trigger
           id={id}
           text={text}
-          placeholder={placeholder}
+          placeholder={placeholder ?? t('common.selectDate')}
           error={error}
           hasValue={Boolean(selected)}
           disabled={disabled}
@@ -303,18 +292,18 @@ export function DatePicker({
           onClose={() => setOpen(false)}
           anchorRef={anchorRef}
           align={align}
-          label="Kalender"
+          label={t('common.calendar')}
         >
           <div className="mb-3 flex items-center justify-between gap-1">
-            <NavButton onClick={() => setCursor(subMonths(cursor, 1))} label="Bulan sebelumnya">
+            <NavButton onClick={() => setCursor(subMonths(cursor, 1))} label={t('common.previousMonth')}>
               <ChevronLeft size={18} />
             </NavButton>
             <span className="text-body-sm font-medium text-ink">
-              {format(cursor, 'MMMM yyyy')}
+              {format(cursor, 'MMMM yyyy', { locale })}
             </span>
             <NavButton
               onClick={() => setCursor(addMonths(cursor, 1))}
-              label="Bulan berikutnya"
+              label={t('common.nextMonth')}
               disabled={Boolean(max && isAfter(startOfMonth(addMonths(cursor, 1)), max))}
             >
               <ChevronRight size={18} />
@@ -322,9 +311,9 @@ export function DatePicker({
           </div>
 
           <div className="grid grid-cols-7 gap-1">
-            {WEEKDAYS.map((day) => (
-              <span key={day} className="py-1 text-center text-caption text-iron">
-                {day}
+            {days.slice(0, 7).map((day) => (
+              <span key={day.toISOString()} className="py-1 text-center text-caption text-iron">
+                {format(day, 'EEE', { locale })}
               </span>
             ))}
 
@@ -362,7 +351,7 @@ export function DatePicker({
               onClick={() => setCursor(new Date())}
               className="text-caption font-medium text-monday-violet hover:underline"
             >
-              Hari ini
+              {t('common.today')}
             </button>
             {clearable && (
               <button
@@ -373,7 +362,7 @@ export function DatePicker({
                 }}
                 className="text-caption font-medium text-slate hover:underline"
               >
-                Kosongkan
+                {t('common.clear')}
               </button>
             )}
           </div>
@@ -403,12 +392,14 @@ export function MonthPicker({
   onChange,
   label,
   error,
-  placeholder = 'Pilih bulan',
+  placeholder,
   disabled,
   clearable = false,
   align = 'start',
   maxMonth,
 }: MonthPickerProps) {
+  const { t } = useTranslation();
+  const locale = dateLocale();
   const id = useId();
   const anchorRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
@@ -427,7 +418,7 @@ export function MonthPicker({
     setOpen(false);
   };
 
-  const text = selected ? format(selected, 'MMM yyyy') : '';
+  const text = selected ? format(selected, 'MMM yyyy', { locale }) : '';
   const selectedMonth = selected ? getMonth(selected) : -1;
   const selectedYear = selected ? getYear(selected) : -1;
 
@@ -438,7 +429,7 @@ export function MonthPicker({
         <Trigger
           id={id}
           text={text}
-          placeholder={placeholder}
+          placeholder={placeholder ?? t('common.selectMonth')}
           error={error}
           hasValue={Boolean(selected)}
           disabled={disabled}
@@ -452,10 +443,10 @@ export function MonthPicker({
           onClose={() => setOpen(false)}
           anchorRef={anchorRef}
           align={align}
-          label="Pilih bulan"
+          label={t('common.selectMonth')}
         >
           <div className="mb-3 flex items-center justify-between gap-1">
-            <NavButton onClick={() => setCursor(subYears(cursor, 1))} label="Tahun sebelumnya">
+            <NavButton onClick={() => setCursor(subYears(cursor, 1))} label={t('common.previousYear')}>
               <ChevronLeft size={18} />
             </NavButton>
             <button
@@ -467,7 +458,7 @@ export function MonthPicker({
             </button>
             <NavButton
               onClick={() => setCursor(addYears(cursor, 1))}
-              label="Tahun berikutnya"
+              label={t('common.nextYear')}
               disabled={Boolean(max && getYear(cursor) >= getYear(max))}
             >
               <ChevronRight size={18} />
@@ -475,7 +466,8 @@ export function MonthPicker({
           </div>
 
           <div className="grid grid-cols-3 gap-2">
-            {MONTH_LABELS.map((month, index) => {
+            {Array.from({ length: 12 }, (_, index) => format(setMonth(cursor, index), 'MMM', { locale })).map(
+              (month, index) => {
               const isSelected = index === selectedMonth && getYear(cursor) === selectedYear;
               const isCurrent =
                 index === getMonth(new Date()) && getYear(cursor) === getYear(new Date());
@@ -511,7 +503,7 @@ export function MonthPicker({
               disabled={Boolean(max && isAfter(startOfMonth(new Date()), max))}
               className="text-caption font-medium text-monday-violet hover:underline disabled:cursor-not-allowed disabled:text-iron disabled:no-underline"
             >
-              Bulan ini
+              {t('common.thisMonth')}
             </button>
             {clearable && (
               <button
@@ -522,7 +514,7 @@ export function MonthPicker({
                 }}
                 className="text-caption font-medium text-slate hover:underline"
               >
-                Kosongkan
+                {t('common.clear')}
               </button>
             )}
           </div>

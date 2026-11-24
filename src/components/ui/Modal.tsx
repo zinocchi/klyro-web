@@ -1,4 +1,5 @@
 import { useEffect, type ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 import { X } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
@@ -12,6 +13,8 @@ export interface ModalProps {
 }
 
 export function Modal({ open, onClose, title, children, footer, className }: ModalProps) {
+  const { t } = useTranslation();
+
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
@@ -48,7 +51,7 @@ export function Modal({ open, onClose, title, children, footer, className }: Mod
           <button
             type="button"
             onClick={onClose}
-            aria-label="Close dialog"
+            aria-label={t('common.closeDialog')}
             className="rounded-full p-1 text-slate transition-colors hover:bg-cloud"
           >
             <X size={20} />

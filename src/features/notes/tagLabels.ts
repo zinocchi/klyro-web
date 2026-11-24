@@ -1,5 +1,13 @@
 export const NOTE_TAGS = ['Ide', 'Kerja', 'Pribadi', 'Keuangan'] as const;
 
+/** Display-only translations for preset tags; the stored value stays put. */
+export const TAG_LABEL_KEYS: Record<string, string> = {
+  ide: 'notes.tags.ide',
+  kerja: 'notes.tags.kerja',
+  pribadi: 'notes.tags.pribadi',
+  keuangan: 'notes.tags.keuangan',
+};
+
 const PRESET_TONES: Record<string, string> = {
   ide: 'bg-lavender text-ink',
   kerja: 'bg-sky text-ink',

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Plus } from 'lucide-react';
 import { Button } from '../../../components/ui/Button';
 import { EmptyState } from '../../../components/ui/EmptyState';
@@ -11,6 +12,7 @@ import { HabitFormModal } from '../components/HabitFormModal';
 import { useHabits } from '../hooks/useHabits';
 
 export function HabitsPage() {
+  const { t } = useTranslation();
   const [date, setDate] = useState(toDateKey());
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState<Habit | null>(null);
@@ -31,14 +33,12 @@ export function HabitsPage() {
     <div className="flex flex-col gap-6">
       <header className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
         <div className="min-w-0">
-          <h1 className="break-words text-heading-sm font-medium text-ink">Habits</h1>
-          <p className="mt-1 text-body-sm text-slate">
-            Check in daily and keep your streak alive.
-          </p>
+          <h1 className="break-words text-heading-sm font-medium text-ink">{t('habits.title')}</h1>
+          <p className="mt-1 text-body-sm text-slate">{t('habits.subtitle')}</p>
         </div>
         <Button onClick={openCreate} className="w-full sm:w-auto">
           <Plus size={16} />
-          New Habit
+          {t('habits.newHabit')}
         </Button>
       </header>
 
@@ -46,11 +46,11 @@ export function HabitsPage() {
 
       {query.isPending ? (
         <div className="flex justify-center py-16">
-          <Spinner size="lg" label="Loading habits" />
+          <Spinner size="lg" />
         </div>
       ) : query.isError ? (
         <p className="rounded-[24px] border border-mist bg-snow p-8 text-center text-body-sm text-[#e05c5c]">
-          Could not load habits. {query.error?.message}
+          {t('habits.loadError')} {query.error?.message}
         </p>
       ) : query.data?.habits.length ? (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -60,12 +60,12 @@ export function HabitsPage() {
         </div>
       ) : (
         <EmptyState
-          title="No habits yet"
-          description="Create a habit and start building a streak."
+          title={t('habits.empty')}
+          description={t('habits.emptyDescription')}
           action={
             <Button onClick={openCreate} className="w-full sm:w-auto">
               <Plus size={16} />
-              New Habit
+              {t('habits.newHabit')}
             </Button>
           }
         />

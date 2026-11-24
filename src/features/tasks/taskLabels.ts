@@ -1,17 +1,5 @@
 import type { TaskPriority, TaskStatus } from '../../types/api.types';
 
-export const STATUS_LABEL: Record<TaskStatus, string> = {
-  PENDING: 'Pending',
-  IN_PROGRESS: 'In Progress',
-  COMPLETED: 'Completed',
-};
-
-export const PRIORITY_LABEL: Record<TaskPriority, string> = {
-  LOW: 'Low',
-  MEDIUM: 'Medium',
-  HIGH: 'High',
-};
-
 /** Mint for done, warm apricot tint for working/high, periwinkle wash for pending/low. */
 export const statusTone: Record<TaskStatus, string> = {
   PENDING: 'bg-periwinkle-wash text-ink',

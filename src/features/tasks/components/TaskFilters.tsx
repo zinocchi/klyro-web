@@ -1,11 +1,11 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { SlidersHorizontal } from 'lucide-react';
 import { Button } from '../../../components/ui/Button';
 import { Select } from '../../../components/ui/Select';
 import { DatePicker } from '../../../components/ui/DatePicker';
 import { cn } from '../../../lib/utils';
 import { TASK_PRIORITIES, TASK_STATUSES } from '../../../types/api.types';
-import { PRIORITY_LABEL, STATUS_LABEL } from '../taskLabels';
 import type { TaskFilterValues } from '../schemas/task.schema';
 
 export interface TaskFiltersProps {
@@ -15,6 +15,7 @@ export interface TaskFiltersProps {
 }
 
 export function TaskFilters({ value, onChange, onReset }: TaskFiltersProps) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const activeCount = [value.status, value.priority, value.due_date].filter(Boolean).length;
 
@@ -22,7 +23,7 @@ export function TaskFilters({ value, onChange, onReset }: TaskFiltersProps) {
     <>
       <div>
         <Select
-          label="Status"
+          label={t('tasks.filters.status')}
           value={value.status ?? ''}
           onChange={(e) =>
             onChange({
@@ -31,10 +32,10 @@ export function TaskFilters({ value, onChange, onReset }: TaskFiltersProps) {
             })
           }
         >
-          <option value="">All statuses</option>
+          <option value="">{t('tasks.filters.allStatuses')}</option>
           {TASK_STATUSES.map((s) => (
             <option key={s} value={s}>
-              {STATUS_LABEL[s]}
+              {t(`tasks.status.${s}`)}
             </option>
           ))}
         </Select>
@@ -42,7 +43,7 @@ export function TaskFilters({ value, onChange, onReset }: TaskFiltersProps) {
 
       <div>
         <Select
-          label="Priority"
+          label={t('tasks.filters.priority')}
           value={value.priority ?? ''}
           onChange={(e) =>
             onChange({
@@ -51,10 +52,10 @@ export function TaskFilters({ value, onChange, onReset }: TaskFiltersProps) {
             })
           }
         >
-          <option value="">All priorities</option>
+          <option value="">{t('tasks.filters.allPriorities')}</option>
           {TASK_PRIORITIES.map((p) => (
             <option key={p} value={p}>
-              {PRIORITY_LABEL[p]}
+              {t(`tasks.priority.${p}`)}
             </option>
           ))}
         </Select>
@@ -62,8 +63,8 @@ export function TaskFilters({ value, onChange, onReset }: TaskFiltersProps) {
 
       <div>
         <DatePicker
-          label="Due date"
-          placeholder="Semua tanggal"
+          label={t('tasks.filters.dueDate')}
+          placeholder={t('tasks.filters.allDates')}
           clearable
           value={value.due_date ?? ''}
           onChange={(due_date) => onChange({ ...value, due_date })}
@@ -76,7 +77,7 @@ export function TaskFilters({ value, onChange, onReset }: TaskFiltersProps) {
         disabled={activeCount === 0}
         className="hidden w-full lg:w-auto lg:inline-flex"
       >
-        Clear
+        {t('tasks.filters.clear')}
       </Button>
     </>
   );
@@ -92,7 +93,7 @@ export function TaskFilters({ value, onChange, onReset }: TaskFiltersProps) {
           className="flex items-center gap-2 rounded-[6px] px-2 py-2 text-body-sm font-medium text-ink"
         >
           <SlidersHorizontal size={16} />
-          Filters
+          {t('tasks.filters.title')}
           {activeCount > 0 && (
             <span className="rounded-full bg-monday-violet px-2 py-0.5 text-caption text-snow">
               {activeCount}
@@ -100,7 +101,7 @@ export function TaskFilters({ value, onChange, onReset }: TaskFiltersProps) {
           )}
         </button>
         <Button variant="secondary" size="sm" onClick={onReset} disabled={activeCount === 0}>
-          Clear
+          {t('tasks.filters.clear')}
         </Button>
       </div>
 

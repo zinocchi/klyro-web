@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { cn, shiftDateKey, toDateKey } from '../../../lib/utils';
 
 export interface HabitHeatmapProps {
@@ -7,17 +8,18 @@ export interface HabitHeatmapProps {
 
 /** 30-day strip: oldest (29 days ago) → today, mint when checked in. */
 export function HabitHeatmap({ recentLogs }: HabitHeatmapProps) {
+  const { t } = useTranslation();
   const done = new Set(recentLogs);
   const today = toDateKey();
   const days = Array.from({ length: 30 }, (_, i) => shiftDateKey(today, i - 29));
 
   return (
     <div className="flex flex-col gap-1.5">
-      <span className="text-caption text-iron">30 hari terakhir</span>
+      <span className="text-caption text-iron">{t('habits.heatmapTitle')}</span>
       <div
         className="flex flex-wrap gap-1"
         role="img"
-        aria-label={`${recentLogs.length} dari 30 hari terakhir selesai`}
+        aria-label={t('habits.heatmapAria', { done: recentLogs.length })}
       >
         {days.map((day) => (
           <span

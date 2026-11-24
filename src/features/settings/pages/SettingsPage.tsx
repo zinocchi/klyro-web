@@ -10,6 +10,7 @@ import { Input } from '../../../components/ui/Input';
 import { Select } from '../../../components/ui/Select';
 import { ApiError } from '../../../lib/api';
 import { formatIDR } from '../../../lib/utils';
+import { useFieldError } from '../../../i18n/useFieldError';
 import { useAuthStore } from '../../../stores/authStore';
 import { updateMe, updatePassword } from '../../auth/api/auth.api';
 import {
@@ -33,13 +34,6 @@ export function SettingsPage() {
       <PasswordCard />
     </div>
   );
-}
-
-/** Schema errors carry i18n keys; API errors arrive ready to display. */
-function useFieldError() {
-  const { t } = useTranslation();
-  return (message?: string) =>
-    !message ? undefined : message.startsWith('validation.') ? t(message) : message;
 }
 
 function ProfileCard() {

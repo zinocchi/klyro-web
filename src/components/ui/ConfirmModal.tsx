@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Button } from './Button';
 import { Modal } from './Modal';
 
@@ -19,11 +20,15 @@ export function ConfirmModal({
   onConfirm,
   title,
   description,
-  confirmText = 'Hapus',
-  cancelText = 'Batal',
+  confirmText,
+  cancelText,
   variant = 'danger',
   isLoading = false,
 }: ConfirmModalProps) {
+  const { t } = useTranslation();
+  const confirm = confirmText ?? t('common.delete');
+  const cancel = cancelText ?? t('common.cancel');
+
   return (
     <Modal open={isOpen} onClose={onClose} title={title}>
       <div className="flex flex-col gap-6">
@@ -37,7 +42,7 @@ export function ConfirmModal({
             disabled={isLoading}
             className="w-full sm:w-auto"
           >
-            {cancelText}
+            {cancel}
           </Button>
           <Button
             type="button"
@@ -46,7 +51,7 @@ export function ConfirmModal({
             isLoading={isLoading}
             className="w-full sm:w-auto"
           >
-            {confirmText}
+            {confirm}
           </Button>
         </div>
       </div>

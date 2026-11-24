@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { Check, Plus, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '../../../components/ui/Button';
@@ -10,10 +11,10 @@ import { Modal } from '../../../components/ui/Modal';
 import { Select } from '../../../components/ui/Select';
 import { ApiError } from '../../../lib/api';
 import { cn, toDateTimeInputValue } from '../../../lib/utils';
+import { useFieldError } from '../../../i18n/useFieldError';
 import { TASK_PRIORITIES, TASK_STATUSES, type Subtask, type Task } from '../../../types/api.types';
 import { useCreateTask, useUpdateTask } from '../hooks/useTasks';
 import { taskFormSchema, type TaskFormValues } from '../schemas/task.schema';
-import { PRIORITY_LABEL, STATUS_LABEL } from '../taskLabels';
 
 export interface TaskFormModalProps {
   open: boolean;
@@ -30,8 +31,9 @@ const EMPTY: TaskFormValues = {
 };
 
 export function TaskFormModal({ open, onClose, task }: TaskFormModalProps) {
+  const { t } = useTranslation();
   return (
-    <Modal open={open} onClose={onClose} title={task ? 'Edit task' : 'New task'}>
+    <Modal open={open} onClose={onClose} title={task ? t('tasks.editTitle') : t('tasks.newTitle')}>
       {/* Remount per task so the form starts from that task's values. */}
       <TaskForm key={task?.id ?? 'new'} task={task} onClose={onClose} />
     </Modal>
@@ -39,6 +41,8 @@ export function TaskFormModal({ open, onClose, task }: TaskFormModalProps) {
 }
 
 function TaskForm({ task, onClose }: { task?: Task | null; onClose: () => void }) {
+  const { t } = useTranslation();
+  const translateError = useFieldError();
   const [formError, setFormError] = useState<string | null>(null);
   const [subtasks, setSubtasks] = useState<Subtask[]>(task?.subtasks ?? []);
   const [draft, setDraft] = useState('');
@@ -103,8 +107,8 @@ function TaskForm({ task, onClose }: { task?: Task | null; onClose: () => void }
         toast.error(error.message);
         return;
       }
-      setFormError('Terjadi kesalahan. Coba lagi.');
-      toast.error('Terjadi kesalahan. Coba lagi.');
+      setFormError(t('common.genericError'));
+      toast.error(t('common.genericError'));
     };
 
     if (task) {
@@ -112,7 +116,7 @@ function TaskForm({ task, onClose }: { task?: Task | null; onClose: () => void }
         { id: task.id, payload },
         {
           onSuccess: () => {
-            toast.success('Task diperbarui');
+            toast.success(t('tasks.toast.updated'));
             onClose();
           },
           onError,
@@ -123,7 +127,7 @@ function TaskForm({ task, onClose }: { task?: Task | null; onClose: () => void }
 
     createMutation.mutate(payload, {
       onSuccess: () => {
-        toast.success('Task dibuat');
+        toast.success(t('tasks.toast.created'));
         onClose();
       },
       onError,
@@ -139,16 +143,16 @@ function TaskForm({ task, onClose }: { task?: Task | null; onClose: () => void }
       )}
 
       <Input
-        label="Title"
-        placeholder="What needs doing?"
-        error={errors.title?.message}
+        label={t('tasks.field.title')}
+        placeholder={t('tasks.field.titlePlaceholder')}
+        error={translateError(errors.title?.message)}
         {...register('title')}
       />
 
       <Input
-        label="Description"
-        placeholder="Optional details"
-        error={errors.description?.message}
+        label={t('tasks.field.description')}
+        placeholder={t('tasks.field.descriptionPlaceholder')}
+        error={translateError(errors.description?.message)}
         {...register('description')}
       />
 
@@ -157,35 +161,43 @@ function TaskForm({ task, onClose }: { task?: Task | null; onClose: () => void }
         name="due_date"
         render={({ field }) => (
           <DatePicker
-            label="Due date"
-            placeholder="Pilih tanggal (opsional)"
+            label={t('tasks.field.dueDate')}
+            placeholder={t('tasks.field.dueDatePlaceholder')}
             clearable
             value={field.value ?? ''}
             onChange={field.onChange}
-            error={errors.due_date?.message}
+            error={translateError(errors.due_date?.message)}
           />
         )}
       />
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <Select label="Status" error={errors.status?.message} {...register('status')}>
+        <Select
+          label={t('tasks.filters.status')}
+          error={translateError(errors.status?.message)}
+          {...register('status')}
+        >
           {TASK_STATUSES.map((s) => (
             <option key={s} value={s}>
-              {STATUS_LABEL[s]}
+              {t(`tasks.status.${s}`)}
             </option>
           ))}
         </Select>
 
-        <Select label="Priority" error={errors.priority?.message} {...register('priority')}>
+        <Select
+          label={t('tasks.filters.priority')}
+          error={translateError(errors.priority?.message)}
+          {...register('priority')}
+        >
           {TASK_PRIORITIES.map((p) => (
             <option key={p} value={p}>
-              {PRIORITY_LABEL[p]}
+              {t(`tasks.priority.${p}`)}
             </option>
           ))}
         </Select>
       </div>
 
       <div className="flex flex-col gap-2">
-        <span className="text-body-sm font-medium text-ink">Subtasks</span>
+        <span className="text-body-sm font-medium text-ink">{t('tasks.subtasks')}</span>
         {subtasks.length > 0 && (
           <ul className="flex flex-col gap-1">
             {subtasks.map((subtask) => (
@@ -197,7 +209,7 @@ function TaskForm({ task, onClose }: { task?: Task | null; onClose: () => void }
                   type="button"
                   onClick={() => toggleSubtask(subtask.id)}
                   aria-pressed={subtask.completed}
-                  aria-label={`Toggle ${subtask.title}`}
+                  aria-label={t('tasks.toggleSubtaskAria', { title: subtask.title })}
                   className={cn(
                     'flex h-4 w-4 shrink-0 items-center justify-center rounded-[4px] border',
                     subtask.completed
@@ -218,7 +230,7 @@ function TaskForm({ task, onClose }: { task?: Task | null; onClose: () => void }
                 <button
                   type="button"
                   onClick={() => removeSubtask(subtask.id)}
-                  aria-label={`Remove ${subtask.title}`}
+                  aria-label={t('tasks.removeSubtaskAria', { title: subtask.title })}
                   className="rounded-full p-1 text-iron transition-colors hover:bg-cloud hover:text-[#e2445c]"
                 >
                   <X size={14} />
@@ -229,8 +241,8 @@ function TaskForm({ task, onClose }: { task?: Task | null; onClose: () => void }
         )}
         <div className="flex items-start gap-2">
           <Input
-            aria-label="Subtask title"
-            placeholder="Tambah langkah kecil…"
+            aria-label={t('tasks.subtaskTitleAria')}
+            placeholder={t('tasks.subtaskPlaceholder')}
             maxLength={200}
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
@@ -246,7 +258,7 @@ function TaskForm({ task, onClose }: { task?: Task | null; onClose: () => void }
             variant="secondary"
             onClick={addSubtask}
             disabled={!draft.trim()}
-            aria-label="Tambah subtask"
+            aria-label={t('tasks.addSubtask')}
           >
             <Plus size={16} />
           </Button>
@@ -256,19 +268,19 @@ function TaskForm({ task, onClose }: { task?: Task | null; onClose: () => void }
       <div className="flex flex-col gap-2">
         <Input
           type="datetime-local"
-          label="Reminder (opsional)"
-          error={errors.reminder_at?.message}
+          label={t('tasks.field.reminder')}
+          error={translateError(errors.reminder_at?.message)}
           {...register('reminder_at')}
         />
-        <p className="text-caption text-iron">Kosongkan bila tidak perlu pengingat.</p>
+        <p className="text-caption text-iron">{t('tasks.field.reminderHint')}</p>
       </div>
 
       <div className="mt-2 flex justify-end gap-3">
         <Button type="button" variant="secondary" onClick={onClose} disabled={isPending}>
-          Cancel
+          {t('common.cancel')}
         </Button>
         <Button type="submit" isLoading={isPending}>
-          {task ? 'Save changes' : 'Create task'}
+          {task ? t('tasks.saveChanges') : t('tasks.create')}
         </Button>
       </div>
     </form>

@@ -1,12 +1,12 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Clock, Flame, Pencil, Trash2, Trophy } from 'lucide-react';
 import { toast } from 'sonner';
 import { Badge } from '../../../components/ui/Badge';
 import { ConfirmModal } from '../../../components/ui/ConfirmModal';
 import { cn } from '../../../lib/utils';
-import type { Habit } from '../../../types/api.types';
+import { TARGET_DAYS, type Habit } from '../../../types/api.types';
 import { useCheckInHabit, useDeleteHabit } from '../hooks/useHabits';
-import { DAY_SHORT } from '../habitLabels';
 import { HabitHeatmap } from './HabitHeatmap';
 
 export interface HabitCardProps {
@@ -16,6 +16,7 @@ export interface HabitCardProps {
 }
 
 export function HabitCard({ habit, date, onEdit }: HabitCardProps) {
+  const { t } = useTranslation();
   const [confirmOpen, setConfirmOpen] = useState(false);
   const checkIn = useCheckInHabit();
   const remove = useDeleteHabit();
@@ -25,8 +26,10 @@ export function HabitCard({ habit, date, onEdit }: HabitCardProps) {
       { id: habit.id, date },
       {
         onSuccess: () =>
-          toast.success(habit.completed ? 'Check-in dibatalkan' : 'Berhasil check-in. Mantap!'),
-        onError: () => toast.error('Gagal memperbarui check-in'),
+          toast.success(
+            habit.completed ? t('habits.toast.checkInUndone') : t('habits.toast.checkInDone'),
+          ),
+        onError: () => toast.error(t('habits.toast.checkInError')),
       },
     );
   };
@@ -35,9 +38,9 @@ export function HabitCard({ habit, date, onEdit }: HabitCardProps) {
     remove.mutate(habit.id, {
       onSuccess: () => {
         setConfirmOpen(false);
-        toast.success('Habit dihapus');
+        toast.success(t('habits.toast.deleted'));
       },
-      onError: () => toast.error('Gagal menghapus habit'),
+      onError: () => toast.error(t('habits.toast.deleteError')),
     });
   };
 
@@ -49,11 +52,11 @@ export function HabitCard({ habit, date, onEdit }: HabitCardProps) {
           <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-caption text-slate">
             <span className="flex items-center gap-1">
               <Flame size={14} className="text-apricot" />
-              {habit.streak_count} day streak
+              {t('habits.currentStreak', { count: habit.streak_count })}
             </span>
             <span className="flex items-center gap-1">
               <Trophy size={14} className="text-monday-violet" />
-              Best {habit.best_streak}
+              {t('habits.bestStreak', { count: habit.best_streak })}
             </span>
             {habit.reminder_time && (
               <Badge tone="info" className="gap-1">
@@ -68,7 +71,7 @@ export function HabitCard({ habit, date, onEdit }: HabitCardProps) {
           <button
             type="button"
             onClick={() => onEdit(habit)}
-            aria-label={`Edit ${habit.title}`}
+            aria-label={t('habits.editAria', { title: habit.title })}
             className="rounded-full p-2 text-slate transition-colors hover:bg-cloud hover:text-monday-violet"
           >
             <Pencil size={16} />
@@ -76,7 +79,7 @@ export function HabitCard({ habit, date, onEdit }: HabitCardProps) {
           <button
             type="button"
             onClick={() => setConfirmOpen(true)}
-            aria-label={`Delete ${habit.title}`}
+            aria-label={t('habits.deleteAria', { title: habit.title })}
             className="rounded-full p-2 text-slate transition-colors hover:bg-cloud hover:text-[#e2445c]"
           >
             <Trash2 size={16} />
@@ -85,8 +88,8 @@ export function HabitCard({ habit, date, onEdit }: HabitCardProps) {
       </div>
 
       <div className="flex flex-wrap gap-1.5">
-        {Object.entries(DAY_SHORT).map(([day, short]) => {
-          const scheduled = habit.target_days.includes(day as Habit['target_days'][number]);
+        {TARGET_DAYS.map((day) => {
+          const scheduled = habit.target_days.includes(day);
           return (
             <span
               key={day}
@@ -95,7 +98,7 @@ export function HabitCard({ habit, date, onEdit }: HabitCardProps) {
                 scheduled ? 'bg-periwinkle-wash text-ink' : 'bg-cloud text-iron',
               )}
             >
-              {short}
+              {t(`habits.days.${day}`)}
             </span>
           );
         })}
@@ -116,15 +119,15 @@ export function HabitCard({ habit, date, onEdit }: HabitCardProps) {
             : 'bg-monday-violet text-snow hover:opacity-90',
         )}
       >
-        {habit.completed ? 'Checked in' : 'Check in'}
+        {habit.completed ? t('habits.checkedIn') : t('habits.checkIn')}
       </button>
 
       <ConfirmModal
         isOpen={confirmOpen}
         onClose={() => setConfirmOpen(false)}
         onConfirm={handleDelete}
-        title="Hapus habit?"
-        description={`"${habit.title}" beserta riwayat check-in-nya akan dihapus permanen.`}
+        title={t('habits.deleteTitle')}
+        description={t('habits.deleteDescription', { title: habit.title })}
         isLoading={remove.isPending}
       />
     </div>

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Card } from '../../../components/ui/Card';
 import { EmptyState } from '../../../components/ui/EmptyState';
 import { Inbox, Plus } from 'lucide-react';
@@ -6,7 +7,6 @@ import { Button } from '../../../components/ui/Button';
 import { cn } from '../../../lib/utils';
 import type { Task, TaskStatus } from '../../../types/api.types';
 import { groupByStatus } from '../hooks/useTasks';
-import { STATUS_LABEL } from '../taskLabels';
 import { TaskCard } from './TaskCard';
 
 export type ViewMode = 'list' | 'board';
@@ -20,6 +20,7 @@ export interface TaskBoardProps {
 const COLUMNS: TaskStatus[] = ['PENDING', 'IN_PROGRESS', 'COMPLETED'];
 
 export function TaskBoard({ tasks, onEdit, onCreate }: TaskBoardProps) {
+  const { t } = useTranslation();
   const [view, setView] = useState<ViewMode>('list');
 
   return (
@@ -27,7 +28,7 @@ export function TaskBoard({ tasks, onEdit, onCreate }: TaskBoardProps) {
       <div className="flex justify-center sm:justify-end">
         <div
           role="tablist"
-          aria-label="Task view"
+          aria-label={t('tasks.viewLabel')}
           className="inline-flex rounded-full border border-pebble bg-snow p-1"
         >
           {(['list', 'board'] as ViewMode[]).map((mode) => (
@@ -44,7 +45,7 @@ export function TaskBoard({ tasks, onEdit, onCreate }: TaskBoardProps) {
                   : 'text-slate hover:text-ink',
               )}
             >
-              {mode === 'list' ? 'List View' : 'Board View'}
+              {mode === 'list' ? t('tasks.listView') : t('tasks.boardView')}
             </button>
           ))}
         </div>
@@ -53,13 +54,13 @@ export function TaskBoard({ tasks, onEdit, onCreate }: TaskBoardProps) {
       {tasks.length === 0 ? (
         <EmptyState
           icon={<Inbox size={32} />}
-          title="No tasks yet"
-          description="Create your first task to start planning your day."
+          title={t('tasks.empty')}
+          description={t('tasks.emptyDescription')}
           action={
             onCreate ? (
               <Button onClick={onCreate}>
                 <Plus size={16} />
-                New Task
+                {t('tasks.newTask')}
               </Button>
             ) : undefined
           }
@@ -80,14 +81,16 @@ export function TaskBoard({ tasks, onEdit, onCreate }: TaskBoardProps) {
                 className="flex flex-col gap-2 rounded-[24px] border border-mist bg-snow p-3 shadow-[var(--shadow-card)]"
               >
                 <div className="flex items-center justify-between px-1">
-                  <h3 className="text-body-sm font-medium text-ink">{STATUS_LABEL[status]}</h3>
+                  <h3 className="text-body-sm font-medium text-ink">{t(`tasks.status.${status}`)}</h3>
                   <span className="rounded-full bg-cloud px-2 py-0.5 text-caption text-slate">
                     {column.length}
                   </span>
                 </div>
 
                 {column.length === 0 ? (
-                  <p className="px-1 py-6 text-center text-caption text-iron">Nothing here yet</p>
+                  <p className="px-1 py-6 text-center text-caption text-iron">
+                    {t('tasks.columnEmpty')}
+                  </p>
                 ) : (
                   column.map((task) => (
                     <div

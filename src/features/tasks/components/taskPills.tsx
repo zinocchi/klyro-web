@@ -1,9 +1,11 @@
 import type { ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 import { cn } from '../../../lib/utils';
 import type { TaskPriority, TaskStatus } from '../../../types/api.types';
-import { PRIORITY_LABEL, STATUS_LABEL, priorityTone, statusTone } from '../taskLabels';
+import { priorityTone, statusTone } from '../taskLabels';
 
 export function StatusPill({ status }: { status: TaskStatus }) {
+  const { t } = useTranslation();
   return (
     <span
       className={cn(
@@ -11,12 +13,13 @@ export function StatusPill({ status }: { status: TaskStatus }) {
         statusTone[status],
       )}
     >
-      {STATUS_LABEL[status]}
+      {t(`tasks.status.${status}`)}
     </span>
   );
 }
 
 export function PriorityPill({ priority }: { priority: TaskPriority }) {
+  const { t } = useTranslation();
   return (
     <span
       className={cn(
@@ -24,7 +27,7 @@ export function PriorityPill({ priority }: { priority: TaskPriority }) {
         priorityTone[priority],
       )}
     >
-      {PRIORITY_LABEL[priority]}
+      {t(`tasks.priority.${priority}`)}
     </span>
   );
 }

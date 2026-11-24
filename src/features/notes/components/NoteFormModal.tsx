@@ -1,16 +1,18 @@
 import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, useWatch } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { Button } from '../../../components/ui/Button';
 import { Input } from '../../../components/ui/Input';
 import { Modal } from '../../../components/ui/Modal';
 import { ApiError } from '../../../lib/api';
+import { useFieldError } from '../../../i18n/useFieldError';
 import { cn, toDateTimeInputValue } from '../../../lib/utils';
 import type { Note } from '../../../types/api.types';
 import { useCreateNote, useUpdateNote } from '../hooks/useNotes';
 import { noteFormSchema, type NoteFormValues } from '../schemas/note.schema';
-import { NOTE_TAGS } from '../tagLabels';
+import { NOTE_TAGS, TAG_LABEL_KEYS } from '../tagLabels';
 
 export interface NoteFormModalProps {
   open: boolean;
@@ -19,8 +21,9 @@ export interface NoteFormModalProps {
 }
 
 export function NoteFormModal({ open, onClose, note }: NoteFormModalProps) {
+  const { t } = useTranslation();
   return (
-    <Modal open={open} onClose={onClose} title={note ? 'Edit catatan' : 'Catatan baru'}>
+    <Modal open={open} onClose={onClose} title={note ? t('notes.editTitle') : t('notes.newTitle')}>
       {/* Remount per note so the form starts from that note's values. */}
       <NoteForm key={note?.id ?? 'new'} note={note} onClose={onClose} />
     </Modal>
@@ -28,6 +31,8 @@ export function NoteFormModal({ open, onClose, note }: NoteFormModalProps) {
 }
 
 function NoteForm({ note, onClose }: { note?: Note | null; onClose: () => void }) {
+  const { t } = useTranslation();
+  const translateError = useFieldError();
   const [formError, setFormError] = useState<string | null>(null);
   const createMutation = useCreateNote();
   const updateMutation = useUpdateNote();
@@ -67,8 +72,8 @@ function NoteForm({ note, onClose }: { note?: Note | null; onClose: () => void }
         toast.error(error.message);
         return;
       }
-      setFormError('Terjadi kesalahan');
-      toast.error('Terjadi kesalahan');
+      setFormError(t('common.genericError'));
+      toast.error(t('common.genericError'));
     };
 
     if (note) {
@@ -85,7 +90,7 @@ function NoteForm({ note, onClose }: { note?: Note | null; onClose: () => void }
         },
         {
           onSuccess: () => {
-            toast.success('Catatan diperbarui');
+            toast.success(t('notes.toast.updated'));
             onClose();
           },
           onError,
@@ -104,7 +109,7 @@ function NoteForm({ note, onClose }: { note?: Note | null; onClose: () => void }
       },
       {
         onSuccess: () => {
-          toast.success('Catatan dibuat');
+          toast.success(t('notes.toast.created'));
           onClose();
         },
         onError,
@@ -121,18 +126,18 @@ function NoteForm({ note, onClose }: { note?: Note | null; onClose: () => void }
       )}
 
       <Input
-        label="Judul"
-        placeholder="Rencana minggu ini"
-        error={errors.title?.message}
+        label={t('notes.field.title')}
+        placeholder={t('notes.field.titlePlaceholder')}
+        error={translateError(errors.title?.message)}
         {...register('title')}
       />
 
       <div className="flex flex-col gap-2">
         <Input
-          label="Tag"
-          placeholder="Pilih atau tulis tag sendiri…"
+          label={t('notes.field.tag')}
+          placeholder={t('notes.field.tagPlaceholder')}
           maxLength={50}
-          error={errors.tag?.message}
+          error={translateError(errors.tag?.message)}
           {...register('tag')}
         />
         <div className="flex flex-wrap gap-2">
@@ -151,7 +156,7 @@ function NoteForm({ note, onClose }: { note?: Note | null; onClose: () => void }
                     : 'border border-pebble bg-snow text-slate hover:border-monday-violet',
                 )}
               >
-                {preset}
+                {t(TAG_LABEL_KEYS[preset.toLowerCase()])}
               </button>
             );
           })}
@@ -160,12 +165,12 @@ function NoteForm({ note, onClose }: { note?: Note | null; onClose: () => void }
 
       <div className="flex flex-col gap-2">
         <label htmlFor="note-content" className="text-body-sm font-medium text-ink">
-          Isi
+          {t('notes.field.content')}
         </label>
         <textarea
           id="note-content"
           rows={6}
-          placeholder="Tulis apa saja…"
+          placeholder={t('notes.field.contentPlaceholder')}
           className={cn(
             'w-full rounded-[6px] border border-pebble bg-snow px-4 py-3 text-body-sm text-ink',
             'placeholder:text-iron focus:border-monday-violet focus:outline-none focus:ring-1 focus:ring-monday-violet',
@@ -174,14 +179,14 @@ function NoteForm({ note, onClose }: { note?: Note | null; onClose: () => void }
           {...register('content')}
         />
         {errors.content && (
-          <p className="text-caption text-[#e05c5c]">{errors.content.message}</p>
+          <p className="text-caption text-[#e05c5c]">{translateError(errors.content.message)}</p>
         )}
       </div>
 
       <Input
         type="datetime-local"
-        label="Pengingat catatan (opsional)"
-        error={errors.remind_at?.message}
+        label={t('notes.field.reminder')}
+        error={translateError(errors.remind_at?.message)}
         {...register('remind_at')}
       />
 
@@ -196,7 +201,7 @@ function NoteForm({ note, onClose }: { note?: Note | null; onClose: () => void }
             : 'border border-pebble bg-snow text-slate hover:border-monday-violet',
         )}
       >
-        {isPinned ? 'Disematkan' : 'Sematkan catatan'}
+        {isPinned ? t('notes.field.pinned') : t('notes.field.pin')}
       </button>
 
       <div className="mt-2 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
@@ -207,10 +212,10 @@ function NoteForm({ note, onClose }: { note?: Note | null; onClose: () => void }
           disabled={isPending}
           className="w-full sm:w-auto"
         >
-          Batal
+          {t('common.cancel')}
         </Button>
         <Button type="submit" isLoading={isPending} className="w-full sm:w-auto">
-          {note ? 'Simpan' : 'Buat catatan'}
+          {note ? t('notes.save') : t('notes.create')}
         </Button>
       </div>
     </form>

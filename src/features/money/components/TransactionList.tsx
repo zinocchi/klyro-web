@@ -1,11 +1,12 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Pencil, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { ConfirmModal } from '../../../components/ui/ConfirmModal';
 import { cn, formatDate, formatIDR } from '../../../lib/utils';
 import type { Transaction } from '../../../types/api.types';
 import { useDeleteTransaction } from '../hooks/useTransactions';
-import { TYPE_LABEL, TYPE_TONE } from '../moneyLabels';
+import { TYPE_TONE } from '../moneyLabels';
 
 export interface TransactionListProps {
   transactions: Transaction[];
@@ -13,6 +14,7 @@ export interface TransactionListProps {
 }
 
 export function TransactionList({ transactions, onEdit }: TransactionListProps) {
+  const { t } = useTranslation();
   const [target, setTarget] = useState<Transaction | null>(null);
   const remove = useDeleteTransaction();
 
@@ -21,9 +23,9 @@ export function TransactionList({ transactions, onEdit }: TransactionListProps) 
     remove.mutate(target.id, {
       onSuccess: () => {
         setTarget(null);
-        toast.success('Transaksi dihapus');
+        toast.success(t('money.list.deleted'));
       },
-      onError: () => toast.error('Gagal menghapus transaksi'),
+      onError: () => toast.error(t('money.list.deleteError')),
     });
   };
 
@@ -47,7 +49,7 @@ export function TransactionList({ transactions, onEdit }: TransactionListProps) 
                 >
                   {transaction.category}
                 </span>
-                <span className="text-caption text-iron">{TYPE_LABEL[transaction.type]}</span>
+                <span className="text-caption text-iron">{t(`money.type.${transaction.type}`)}</span>
                 <span className="text-caption text-iron">{formatDate(transaction.date)}</span>
               </div>
               {transaction.note && (
@@ -70,7 +72,7 @@ export function TransactionList({ transactions, onEdit }: TransactionListProps) 
                 <button
                   type="button"
                   onClick={() => onEdit(transaction)}
-                  aria-label={`Edit ${transaction.category}`}
+                  aria-label={t('money.list.editAria', { category: transaction.category })}
                   className="rounded-full p-2 text-slate transition-colors hover:bg-snow hover:text-monday-violet"
                 >
                   <Pencil size={16} />
@@ -78,7 +80,7 @@ export function TransactionList({ transactions, onEdit }: TransactionListProps) 
                 <button
                   type="button"
                   onClick={() => setTarget(transaction)}
-                  aria-label={`Delete ${transaction.category}`}
+                  aria-label={t('money.list.deleteAria', { category: transaction.category })}
                   className="rounded-full p-2 text-slate transition-colors hover:bg-snow hover:text-[#e2445c]"
                 >
                   <Trash2 size={16} />
@@ -94,10 +96,13 @@ export function TransactionList({ transactions, onEdit }: TransactionListProps) 
         isOpen={Boolean(target)}
         onClose={() => setTarget(null)}
         onConfirm={handleDelete}
-        title="Hapus transaksi?"
+        title={t('money.list.deleteTitle')}
         description={
           target
-            ? `Transaksi "${target.category}" sebesar ${formatIDR(target.amount)} akan dihapus permanen.`
+            ? t('money.list.deleteDescription', {
+                category: target.category,
+                amount: formatIDR(target.amount),
+              })
             : undefined
         }
         isLoading={remove.isPending}

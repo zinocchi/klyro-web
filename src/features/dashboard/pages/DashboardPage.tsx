@@ -7,7 +7,7 @@ import { Card } from '../../../components/ui/Card';
 import { EmptyState } from '../../../components/ui/EmptyState';
 import { Spinner } from '../../../components/ui/Spinner';
 import { useTranslation } from 'react-i18next';
-import { cn, formatIDR, formatLongDate, toDateKey, toMonthKey } from '../../../lib/utils';
+import { cn, formatDate, formatIDR, formatLongDate, toDateKey, toMonthKey } from '../../../lib/utils';
 import { useAuthStore } from '../../../stores/authStore';
 import { useHabits, useCheckInHabit } from '../../habits/hooks/useHabits';
 import { budgetTone } from '../../money/moneyLabels';
@@ -76,8 +76,10 @@ export function DashboardPage() {
       { id: habitId, date: today },
       {
         onSuccess: () =>
-          toast.success(completed ? 'Check-in dibatalkan' : 'Berhasil check-in. Mantap!'),
-        onError: () => toast.error('Gagal memperbarui check-in'),
+          toast.success(
+            completed ? t('habits.toast.checkInUndone') : t('habits.toast.checkInDone'),
+          ),
+        onError: () => toast.error(t('habits.toast.checkInError')),
       },
     );
   };
@@ -94,43 +96,43 @@ export function DashboardPage() {
       <header className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <h1 className="break-words text-heading-sm font-medium text-ink">
-            {user?.name ? `Halo, ${user.name}` : 'Halo'}
+            {user?.name ? t('dashboard.greeting', { name: user.name }) : t('dashboard.greetingAnon')}
           </h1>
           <p className="mt-1 break-words text-body-sm text-slate">{formatLongDate(today)}</p>
         </div>
         <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
           <Button onClick={() => setTaskModalOpen(true)} className="w-full sm:w-auto">
             <Plus size={16} />
-            New Task
+            {t('dashboard.newTask')}
           </Button>
           <Button onClick={() => setHabitModalOpen(true)} className="w-full sm:w-auto">
             <Plus size={16} />
-            New Habit
+            {t('dashboard.newHabit')}
           </Button>
         </div>
       </header>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <MetricCard
-          label="Tasks pending"
+          label={t('dashboard.metrics.pending')}
           value={stats.pending}
           tone="mint"
           icon={<ListTodo size={20} />}
         />
         <MetricCard
-          label="Tasks completed"
+          label={t('dashboard.metrics.completed')}
           value={stats.completed}
           tone="sky"
           icon={<Check size={20} />}
         />
         <MetricCard
-          label="Active habits"
+          label={t('dashboard.metrics.activeHabits')}
           value={stats.activeHabits}
           tone="lavender"
           icon={<Repeat2 size={20} />}
         />
         <MetricCard
-          label="Best streak"
+          label={t('dashboard.metrics.bestStreak')}
           value={stats.bestStreak}
           tone="aqua"
           icon={<Flame size={20} />}
@@ -192,20 +194,20 @@ export function DashboardPage() {
         {/* Today's habits */}
         <Card className="p-6">
           <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-subheading font-medium text-ink">Today&rsquo;s Habits</h2>
+            <h2 className="text-subheading font-medium text-ink">{t('dashboard.habitsTitle')}</h2>
             <Link to="/habits" className="text-body-sm font-medium text-monday-violet hover:underline">
-              View all
+              {t('common.viewAll')}
             </Link>
           </div>
 
           {loading ? (
             <div className="flex justify-center py-10">
-              <Spinner label="Loading habits" />
+              <Spinner />
             </div>
           ) : habits.length === 0 ? (
             <EmptyState
-              title="No habits scheduled"
-              description="Create a habit to start your streak."
+              title={t('dashboard.habitsEmptyTitle')}
+              description={t('dashboard.habitsEmptyDescription')}
             />
           ) : (
             <ul className="flex flex-col gap-2">
@@ -218,13 +220,13 @@ export function DashboardPage() {
                     <p className="break-words text-body-sm font-medium text-ink">{habit.title}</p>
                     <p className="mt-0.5 flex items-center gap-1 text-caption text-slate">
                       <Flame size={12} className="text-apricot" />
-                      {habit.streak_count} day streak
+                      {t('habits.currentStreak', { count: habit.streak_count })}
                     </p>
                   </div>
                   <button
                     type="button"
                     aria-pressed={habit.completed}
-                    aria-label={`Check in ${habit.title}`}
+                    aria-label={t('dashboard.checkInAria', { title: habit.title })}
                     onClick={() => toggleCheckIn(habit.id, habit.completed)}
                     className={cn(
                       'w-full rounded-full px-4 py-1.5 text-caption font-medium transition-opacity sm:w-auto',
@@ -233,7 +235,7 @@ export function DashboardPage() {
                         : 'bg-monday-violet text-snow hover:opacity-90',
                     )}
                   >
-                    {habit.completed ? 'Done' : 'Check in'}
+                    {habit.completed ? t('dashboard.checkedIn') : t('dashboard.checkIn')}
                   </button>
                 </li>
               ))}
@@ -245,19 +247,22 @@ export function DashboardPage() {
         <Card className="p-6">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-subheading font-medium text-ink">
-              Priority &amp; Upcoming Tasks
+              {t('dashboard.tasksTitle')}
             </h2>
             <Link to="/tasks" className="text-body-sm font-medium text-monday-violet hover:underline">
-              View all
+              {t('common.viewAll')}
             </Link>
           </div>
 
           {loading ? (
             <div className="flex justify-center py-10">
-              <Spinner label="Loading tasks" />
+              <Spinner />
             </div>
           ) : stats.focusTasks.length === 0 ? (
-            <EmptyState title="Nothing pending" description="You are all caught up." />
+            <EmptyState
+              title={t('dashboard.tasksEmptyTitle')}
+              description={t('dashboard.tasksEmptyDescription')}
+            />
           ) : (
             <ul className="flex flex-col gap-2">
               {stats.focusTasks.map((task) => (
@@ -268,7 +273,9 @@ export function DashboardPage() {
                   <div className="min-w-0">
                     <p className="break-words text-body-sm font-medium text-ink">{task.title}</p>
                     {task.due_date && (
-                      <p className="mt-0.5 text-caption text-slate">Due {task.due_date}</p>
+                      <p className="mt-0.5 text-caption text-slate">
+                        {t('dashboard.due', { date: formatDate(task.due_date) })}
+                      </p>
                     )}
                   </div>
                   <div className="flex shrink-0 flex-wrap items-center gap-2">

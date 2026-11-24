@@ -1,5 +1,6 @@
 import { format } from 'date-fns';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { MonthPicker } from '../../../components/ui/DatePicker';
 import { toMonthKey } from '../../../lib/utils';
 
@@ -17,6 +18,7 @@ function shiftMonth(month: string, delta: number): string {
 }
 
 export function MonthSelector({ value, onChange }: MonthSelectorProps) {
+  const { t } = useTranslation();
   const current = toMonthKey();
   const isCurrent = value === current;
 
@@ -25,7 +27,7 @@ export function MonthSelector({ value, onChange }: MonthSelectorProps) {
       <button
         type="button"
         onClick={() => onChange(shiftMonth(value, -1))}
-        aria-label="Previous month"
+        aria-label={t('common.previousMonth')}
         className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full border border-pebble text-slate transition-colors hover:border-monday-violet hover:text-monday-violet"
       >
         <ChevronLeft size={18} />
@@ -35,7 +37,7 @@ export function MonthSelector({ value, onChange }: MonthSelectorProps) {
         <MonthPicker
           value={value}
           onChange={onChange}
-          placeholder="Pilih bulan"
+          placeholder={t('common.selectMonth')}
           align="end"
           maxMonth={current}
         />
@@ -45,7 +47,7 @@ export function MonthSelector({ value, onChange }: MonthSelectorProps) {
         type="button"
         onClick={() => onChange(shiftMonth(value, 1))}
         disabled={shiftMonth(value, 1) > current}
-        aria-label="Next month"
+        aria-label={t('common.nextMonth')}
         className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full border border-pebble text-slate transition-colors hover:border-monday-violet hover:text-monday-violet disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-pebble disabled:hover:text-slate"
       >
         <ChevronRight size={18} />
@@ -61,7 +63,7 @@ export function MonthSelector({ value, onChange }: MonthSelectorProps) {
             : 'min-h-[44px] rounded-full bg-monday-violet px-4 text-body-sm font-medium text-snow hover:opacity-90'
         }
       >
-        Bulan ini
+        {t('common.thisMonth')}
       </button>
     </div>
   );

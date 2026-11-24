@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { DatePicker } from '../../../components/ui/DatePicker';
 import { cn, formatLongDate, isToday, shiftDateKey, toDateKey } from '../../../lib/utils';
@@ -8,6 +9,7 @@ export interface DateNavigatorProps {
 }
 
 export function DateNavigator({ value, onChange }: DateNavigatorProps) {
+  const { t } = useTranslation();
   const today = toDateKey();
 
   return (
@@ -15,7 +17,7 @@ export function DateNavigator({ value, onChange }: DateNavigatorProps) {
       <button
         type="button"
         onClick={() => onChange(shiftDateKey(value, -1))}
-        aria-label="Previous day"
+        aria-label={t('common.previousDay')}
         className="rounded-full border border-pebble p-2 text-slate transition-colors hover:border-monday-violet hover:text-monday-violet"
       >
         <ChevronLeft size={18} />
@@ -25,7 +27,7 @@ export function DateNavigator({ value, onChange }: DateNavigatorProps) {
         <DatePicker
           value={value}
           onChange={(date) => date && onChange(date)}
-          placeholder="Pilih tanggal"
+          placeholder={t('common.selectDate')}
           maxDate={today}
         />
         <p className="mt-1 text-caption text-slate">{formatLongDate(value)}</p>
@@ -35,7 +37,7 @@ export function DateNavigator({ value, onChange }: DateNavigatorProps) {
         type="button"
         onClick={() => onChange(shiftDateKey(value, 1))}
         disabled={shiftDateKey(value, 1) > today}
-        aria-label="Next day"
+        aria-label={t('common.nextDay')}
         className="rounded-full border border-pebble p-2 text-slate transition-colors hover:border-monday-violet hover:text-monday-violet disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-pebble disabled:hover:text-slate"
       >
         <ChevronRight size={18} />
@@ -52,7 +54,7 @@ export function DateNavigator({ value, onChange }: DateNavigatorProps) {
             : 'bg-monday-violet text-snow hover:opacity-90',
         )}
       >
-        Today
+        {t('common.today')}
       </button>
     </div>
   );

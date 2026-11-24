@@ -6,16 +6,16 @@ export const taskFormSchema = z.object({
   title: z
     .string()
     .trim()
-    .min(1, 'Title is required')
-    .max(200, 'Title is too long'),
+    .min(1, 'validation.titleRequired')
+    .max(200, 'validation.titleMax'),
   description: z
     .string()
     .trim()
-    .max(2000, 'Description is too long')
+    .max(2000, 'validation.descriptionMax')
     .optional()
     .or(z.literal('')),
   due_date: z
-    .union([z.literal(''), z.string().regex(dateKey, 'Use YYYY-MM-DD')])
+    .union([z.literal(''), z.string().regex(dateKey, 'validation.dateFormat')])
     .optional(),
   status: z.enum(['PENDING', 'IN_PROGRESS', 'COMPLETED']),
   priority: z.enum(['LOW', 'MEDIUM', 'HIGH']),

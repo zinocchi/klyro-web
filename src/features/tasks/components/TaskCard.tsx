@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { AlarmClock, Check, Pencil, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { ConfirmModal } from '../../../components/ui/ConfirmModal';
@@ -6,7 +7,6 @@ import { cn, formatDate, formatDateTime } from '../../../lib/utils';
 import { TASK_STATUSES, type Task, type TaskStatus } from '../../../types/api.types';
 import { useDeleteTask, useUpdateTask } from '../hooks/useTasks';
 import { Pill, PriorityPill, StatusPill } from './taskPills';
-import { STATUS_LABEL } from '../taskLabels';
 
 export interface TaskCardProps {
   task: Task;
@@ -14,6 +14,7 @@ export interface TaskCardProps {
 }
 
 export function TaskCard({ task, onEdit }: TaskCardProps) {
+  const { t } = useTranslation();
   const [confirmOpen, setConfirmOpen] = useState(false);
   const updateMutation = useUpdateTask();
   const deleteMutation = useDeleteTask();
@@ -23,8 +24,8 @@ export function TaskCard({ task, onEdit }: TaskCardProps) {
     updateMutation.mutate(
       { id: task.id, payload: { status } },
       {
-        onSuccess: () => toast.success('Status task diperbarui'),
-        onError: () => toast.error('Gagal memperbarui task'),
+        onSuccess: () => toast.success(t('tasks.toast.statusUpdated')),
+        onError: () => toast.error(t('tasks.toast.statusError')),
       },
     );
   };
@@ -35,7 +36,7 @@ export function TaskCard({ task, onEdit }: TaskCardProps) {
     );
     updateMutation.mutate(
       { id: task.id, payload: { subtasks } },
-      { onError: () => toast.error('Gagal memperbarui subtask') },
+      { onError: () => toast.error(t('tasks.toast.subtaskError')) },
     );
   };
 
@@ -43,9 +44,9 @@ export function TaskCard({ task, onEdit }: TaskCardProps) {
     deleteMutation.mutate(task.id, {
       onSuccess: () => {
         setConfirmOpen(false);
-        toast.success('Task dihapus');
+        toast.success(t('tasks.toast.deleted'));
       },
-      onError: () => toast.error('Gagal menghapus task'),
+      onError: () => toast.error(t('tasks.toast.deleteError')),
     });
   };
 
@@ -118,21 +119,21 @@ export function TaskCard({ task, onEdit }: TaskCardProps) {
         )}
 
         <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-caption text-iron">
-          {task.due_date && <span>Due {formatDate(task.due_date)}</span>}
-          <span>Created {formatDate(task.created_at)}</span>
+          {task.due_date && <span>{t('tasks.due', { date: formatDate(task.due_date) })}</span>}
+          <span>{t('tasks.created', { date: formatDate(task.created_at) })}</span>
         </div>
       </div>
 
       <div className="flex shrink-0 items-center gap-1">
         <select
-          aria-label="Change task status"
+          aria-label={t('tasks.statusAria')}
           value={task.status}
           onChange={(e) => changeStatus(e.target.value as TaskStatus)}
           className="min-w-0 flex-1 rounded-[6px] border border-pebble bg-snow px-2 py-1.5 text-caption text-slate focus:border-monday-violet focus:outline-none sm:flex-none"
         >
           {TASK_STATUSES.map((s) => (
             <option key={s} value={s}>
-              {STATUS_LABEL[s]}
+              {t(`tasks.status.${s}`)}
             </option>
           ))}
         </select>
@@ -140,7 +141,7 @@ export function TaskCard({ task, onEdit }: TaskCardProps) {
         <button
           type="button"
           onClick={() => onEdit(task)}
-          aria-label={`Edit ${task.title}`}
+          aria-label={t('tasks.editAria', { title: task.title })}
           className="rounded-full p-2 text-slate transition-colors hover:bg-cloud hover:text-monday-violet"
         >
           <Pencil size={16} />
@@ -149,7 +150,7 @@ export function TaskCard({ task, onEdit }: TaskCardProps) {
         <button
           type="button"
           onClick={() => setConfirmOpen(true)}
-          aria-label={`Delete ${task.title}`}
+          aria-label={t('tasks.deleteAria', { title: task.title })}
           className="rounded-full p-2 text-slate transition-colors hover:bg-cloud hover:text-[#e2445c]"
         >
           <Trash2 size={16} />
@@ -160,8 +161,8 @@ export function TaskCard({ task, onEdit }: TaskCardProps) {
         isOpen={confirmOpen}
         onClose={() => setConfirmOpen(false)}
         onConfirm={handleDelete}
-        title="Hapus task?"
-        description={`"${task.title}" akan dihapus permanen.`}
+        title={t('tasks.deleteTitle')}
+        description={t('tasks.deleteDescription', { title: task.title })}
         isLoading={deleteMutation.isPending}
       />
     </div>

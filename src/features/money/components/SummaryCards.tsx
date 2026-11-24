@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { ArrowDownLeft, ArrowUpRight, Wallet } from 'lucide-react';
 import { cn, formatIDR } from '../../../lib/utils';
 import type { TransactionSummary } from '../../../types/api.types';
@@ -28,24 +29,25 @@ function Metric({ label, value, tone, icon, loading }: MetricProps) {
 }
 
 export function SummaryCards({ summary, isLoading }: SummaryCardsProps) {
+  const { t } = useTranslation();
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
       <Metric
-        label="Total Pemasukan"
+        label={t('money.summary.income')}
         value={summary?.total_income ?? 0}
         tone="bg-mint"
         icon={<ArrowDownLeft size={20} />}
         loading={isLoading}
       />
       <Metric
-        label="Total Pengeluaran"
+        label={t('money.summary.expense')}
         value={summary?.total_expense ?? 0}
         tone="bg-sky"
         icon={<ArrowUpRight size={20} />}
         loading={isLoading}
       />
       <Metric
-        label="Sisa Saldo"
+        label={t('money.summary.balance')}
         value={summary?.balance ?? 0}
         tone="bg-lavender"
         icon={<Wallet size={20} />}

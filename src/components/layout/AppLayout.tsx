@@ -15,11 +15,9 @@ import {
 import { toast } from 'sonner';
 import { ConfirmModal } from '../ui/ConfirmModal';
 import { useAuthStore } from '../../stores/authStore';
-import { updateMe } from '../../features/auth/api/auth.api';
 import { NotificationBell } from '../../features/notifications/components/NotificationBell';
 import { useReminderScheduler } from '../../hooks/useReminderScheduler';
 import { cn } from '../../lib/utils';
-import type { Language } from '../../types/api.types';
 import { KlyroIcon, KlyroLogo } from '../brand/KlyroLogo';
 
 const NAV_ITEMS = [
@@ -31,29 +29,15 @@ const NAV_ITEMS = [
   { to: '/settings', key: 'nav.settings', icon: Settings },
 ] as const;
 
-const LANGUAGE_CODES: Language[] = ['id', 'en'];
-
 export function AppLayout() {
   const [open, setOpen] = useState(false);
   const [logoutOpen, setLogoutOpen] = useState(false);
   const navigate = useNavigate();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const user = useAuthStore((s) => s.user);
-  const setUser = useAuthStore((s) => s.setUser);
   const logout = useAuthStore((s) => s.logout);
 
   useReminderScheduler();
-
-  const language: Language = user?.language === 'en' ? 'en' : 'id';
-
-  const switchLanguage = (next: Language) => {
-    if (next === language) return;
-    // Flip the UI first so the toggle feels instant, then persist the preference.
-    void i18n.changeLanguage(next);
-    updateMe({ language: next })
-      .then((data) => setUser(data.user))
-      .catch(() => toast.error(t('common.languageError')));
-  };
 
   // Lock background scroll while the slide-over drawer is open.
   useEffect(() => {
@@ -80,31 +64,6 @@ export function AppLayout() {
     toast.success(t('common.loggedOut'));
     navigate('/login', { replace: true });
   };
-
-  const languageToggle = (
-    <div
-      role="group"
-      aria-label={t('common.changeLanguage')}
-      className="flex shrink-0 items-center gap-0.5 rounded-full border border-pebble p-0.5"
-    >
-      {LANGUAGE_CODES.map((code) => (
-        <button
-          key={code}
-          type="button"
-          onClick={() => switchLanguage(code)}
-          aria-pressed={language === code}
-          className={cn(
-            'min-h-[32px] rounded-full px-3 text-caption font-medium uppercase transition-colors',
-            language === code
-              ? 'bg-monday-violet text-snow'
-              : 'text-slate hover:bg-cloud hover:text-ink',
-          )}
-        >
-          {code}
-        </button>
-      ))}
-    </div>
-  );
 
   const navContent = (
     <nav className="flex flex-col gap-1">
@@ -158,7 +117,6 @@ export function AppLayout() {
         <KlyroLogo height={26} />
         <div className="flex items-center gap-1">
           <NotificationBell />
-          {languageToggle}
           <button
             type="button"
             onClick={() => setOpen(true)}
@@ -213,7 +171,6 @@ export function AppLayout() {
         <div className="mb-8 flex items-center justify-between gap-2">
           <KlyroLogo height={30} />
           <div className="flex items-center gap-1">
-            {languageToggle}
             <NotificationBell />
           </div>
         </div>

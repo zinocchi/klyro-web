@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import type { TFunction } from 'i18next';
 import { Download, Plus, Wallet } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../../../components/ui/Button';
@@ -14,14 +15,21 @@ import { TransactionFilters } from '../components/TransactionFilters';
 import { TransactionFormModal } from '../components/TransactionFormModal';
 import { TransactionList } from '../components/TransactionList';
 import { useTransactionSummary, useTransactions } from '../hooks/useTransactions';
-import { TYPE_LABEL } from '../moneyLabels';
 
-function downloadCsv(transactions: Transaction[], month: string) {
+function downloadCsv(transactions: Transaction[], month: string, t: TFunction) {
   const cell = (value: string | number) => `"${String(value).replace(/"/g, '""')}"`;
   const lines = [
-    'Tanggal,Tipe,Kategori,Nominal,Catatan',
+    [
+      t('money.csv.date'),
+      t('money.csv.type'),
+      t('money.csv.category'),
+      t('money.csv.amount'),
+      t('money.csv.note'),
+    ]
+      .map(cell)
+      .join(','),
     ...transactions.map((tx) =>
-      [tx.date.slice(0, 10), TYPE_LABEL[tx.type], tx.category, tx.amount, tx.note ?? '']
+      [tx.date.slice(0, 10), t(`money.type.${tx.type}`), tx.category, tx.amount, tx.note ?? '']
         .map(cell)
         .join(','),
     ),
@@ -30,7 +38,7 @@ function downloadCsv(transactions: Transaction[], month: string) {
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.href = url;
-  link.download = `klyro-transaksi-${month}.csv`;
+  link.download = t('money.csv.fileName', { month });
   link.click();
   URL.revokeObjectURL(url);
 }
@@ -85,15 +93,13 @@ export function MoneyPage() {
     <div className="flex flex-col gap-6">
       <header className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
         <div className="min-w-0">
-          <h1 className="break-words text-heading-sm font-medium text-ink">Money</h1>
-          <p className="mt-1 text-body-sm text-slate">
-            Catat pemasukan dan pengeluaran bulan ini.
-          </p>
+          <h1 className="break-words text-heading-sm font-medium text-ink">{t('money.title')}</h1>
+          <p className="mt-1 text-body-sm text-slate">{t('money.subtitle')}</p>
         </div>
         <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
           <Button
             variant="secondary"
-            onClick={() => downloadCsv(transactions, month)}
+            onClick={() => downloadCsv(transactions, month, t)}
             disabled={transactions.length === 0}
             className="w-full sm:w-auto"
           >
@@ -102,7 +108,7 @@ export function MoneyPage() {
           </Button>
           <Button onClick={openCreate} className="w-full sm:w-auto">
             <Plus size={16} />
-            Transaksi
+            {t('money.newTransaction')}
           </Button>
         </div>
       </header>
@@ -136,11 +142,11 @@ export function MoneyPage() {
 
       {listQuery.isPending ? (
         <div className="flex justify-center py-16">
-          <Spinner size="lg" label="Memuat transaksi" />
+          <Spinner size="lg" />
         </div>
       ) : listQuery.isError ? (
         <p className="rounded-[24px] border border-mist bg-snow p-8 text-center text-body-sm text-[#e05c5c]">
-          Gagal memuat transaksi. {listQuery.error?.message}
+          {t('money.loadError')} {listQuery.error?.message}
         </p>
       ) : transactions.length === 0 && monthTransactions.length > 0 ? (
         <p className="rounded-[24px] border border-mist bg-snow p-8 text-center text-body-sm text-slate">
@@ -149,12 +155,12 @@ export function MoneyPage() {
       ) : transactions.length === 0 ? (
         <EmptyState
           icon={<Wallet size={32} />}
-          title="Belum ada transaksi"
-          description="Tambahkan pemasukan atau pengeluaran pertama bulan ini."
+          title={t('money.empty')}
+          description={t('money.emptyDescription')}
           action={
             <Button onClick={openCreate} className="w-full sm:w-auto">
               <Plus size={16} />
-              Transaksi
+              {t('money.newTransaction')}
             </Button>
           }
         />

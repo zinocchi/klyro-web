@@ -5,16 +5,16 @@ export const habitFormSchema = z.object({
   title: z
     .string()
     .trim()
-    .min(1, 'Title is required')
-    .max(200, 'Title is too long'),
+    .min(1, 'validation.titleRequired')
+    .max(200, 'validation.titleMax'),
   target_days: z
     .array(z.enum(['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN']))
-    .min(1, 'Pick at least one day')
+    .min(1, 'validation.targetDaysMin')
     .max(7)
-    .refine((days) => new Set(days).size === days.length, 'Days must be unique'),
+    .refine((days) => new Set(days).size === days.length, 'validation.targetDaysUnique'),
   /** `HH:mm` 24-hour, or empty. */
   reminder_time: z
-    .union([z.literal(''), z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, 'Gunakan format HH:mm')])
+    .union([z.literal(''), z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, 'validation.timeFormat')])
     .optional(),
 });
 

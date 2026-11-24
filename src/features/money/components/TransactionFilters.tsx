@@ -2,7 +2,6 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '../../../components/ui/Button';
 import { Input } from '../../../components/ui/Input';
 import { Select } from '../../../components/ui/Select';
-import { TYPE_LABEL } from '../moneyLabels';
 import type { TransactionType } from '../../../types/api.types';
 
 export interface TransactionFiltersValue {
@@ -38,7 +37,7 @@ export function TransactionFilters({
       />
 
       <Select
-        label="Tipe"
+        label={t('money.filters.type')}
         value={value.type ?? ''}
         onChange={(e) =>
           onChange({
@@ -47,15 +46,15 @@ export function TransactionFilters({
           })
         }
       >
-        <option value="">Semua tipe</option>
-        <option value="INCOME">{TYPE_LABEL.INCOME}</option>
-        <option value="EXPENSE">{TYPE_LABEL.EXPENSE}</option>
+        <option value="">{t('money.filters.allTypes')}</option>
+        <option value="INCOME">{t('money.type.INCOME')}</option>
+        <option value="EXPENSE">{t('money.type.EXPENSE')}</option>
       </Select>
 
       <Input
-        label="Kategori"
+        label={t('money.filters.category')}
         list="transaction-categories"
-        placeholder="Semua kategori"
+        placeholder={t('money.filters.allCategories')}
         value={value.category ?? ''}
         onChange={(e) => onChange({ ...value, category: e.target.value })}
       />
@@ -71,7 +70,7 @@ export function TransactionFilters({
         disabled={!hasFilters}
         className="w-full lg:w-auto"
       >
-        Reset
+        {t('money.filters.reset')}
       </Button>
     </div>
   );

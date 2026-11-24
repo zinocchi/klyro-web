@@ -8,17 +8,17 @@ export const MAX_AMOUNT = 1_000_000_000_000;
 export const transactionFormSchema = z.object({
   type: z.enum(['INCOME', 'EXPENSE']),
   amount: z
-    .number({ message: 'Amount is required' })
-    .int('Amount must be a whole number of rupiah')
-    .positive('Amount must be greater than zero')
-    .max(MAX_AMOUNT, 'Amount is too large'),
+    .number({ message: 'validation.amountRequired' })
+    .int('validation.amountInt')
+    .positive('validation.amountPositive')
+    .max(MAX_AMOUNT, 'validation.amountTooLarge'),
   category: z
     .string()
     .trim()
-    .min(1, 'Category is required')
-    .max(60, 'Category is too long'),
-  note: z.string().trim().max(500, 'Note is too long').optional().or(z.literal('')),
-  date: z.union([z.literal(''), z.string().regex(dateKey, 'Use YYYY-MM-DD')]).optional(),
+    .min(1, 'validation.categoryRequired')
+    .max(60, 'validation.categoryMax'),
+  note: z.string().trim().max(500, 'validation.noteMax').optional().or(z.literal('')),
+  date: z.union([z.literal(''), z.string().regex(dateKey, 'validation.dateFormat')]).optional(),
 });
 
 export type TransactionFormValues = z.infer<typeof transactionFormSchema>;

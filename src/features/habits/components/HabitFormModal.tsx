@@ -1,15 +1,16 @@
 import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, useWatch } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { Button } from '../../../components/ui/Button';
 import { Input } from '../../../components/ui/Input';
 import { Modal } from '../../../components/ui/Modal';
 import { ApiError } from '../../../lib/api';
+import { useFieldError } from '../../../i18n/useFieldError';
 import type { Habit, TargetDay } from '../../../types/api.types';
 import { useCreateHabit, useUpdateHabit } from '../hooks/useHabits';
 import { habitFormSchema, TARGET_DAY_OPTIONS, type HabitFormValues } from '../schemas/habit.schema';
-import { DAY_SHORT } from '../habitLabels';
 
 export interface HabitFormModalProps {
   open: boolean;
@@ -18,8 +19,9 @@ export interface HabitFormModalProps {
 }
 
 export function HabitFormModal({ open, onClose, habit }: HabitFormModalProps) {
+  const { t } = useTranslation();
   return (
-    <Modal open={open} onClose={onClose} title={habit ? 'Edit habit' : 'New habit'}>
+    <Modal open={open} onClose={onClose} title={habit ? t('habits.editTitle') : t('habits.newTitle')}>
       {/* Remount per habit so the form starts from that habit's values. */}
       <HabitForm key={habit?.id ?? 'new'} habit={habit} onClose={onClose} />
     </Modal>
@@ -27,6 +29,8 @@ export function HabitFormModal({ open, onClose, habit }: HabitFormModalProps) {
 }
 
 function HabitForm({ habit, onClose }: { habit?: Habit | null; onClose: () => void }) {
+  const { t } = useTranslation();
+  const translateError = useFieldError();
   const [formError, setFormError] = useState<string | null>(null);
   const createMutation = useCreateHabit();
   const updateMutation = useUpdateHabit();
@@ -76,8 +80,8 @@ function HabitForm({ habit, onClose }: { habit?: Habit | null; onClose: () => vo
         toast.error(error.message);
         return;
       }
-      setFormError('Terjadi kesalahan. Coba lagi.');
-      toast.error('Terjadi kesalahan. Coba lagi.');
+      setFormError(t('common.genericError'));
+      toast.error(t('common.genericError'));
     };
 
     if (habit) {
@@ -92,7 +96,7 @@ function HabitForm({ habit, onClose }: { habit?: Habit | null; onClose: () => vo
         },
         {
           onSuccess: () => {
-            toast.success('Habit diperbarui');
+            toast.success(t('habits.toast.updated'));
             onClose();
           },
           onError,
@@ -109,7 +113,7 @@ function HabitForm({ habit, onClose }: { habit?: Habit | null; onClose: () => vo
       },
       {
         onSuccess: () => {
-          toast.success('Habit dibuat');
+          toast.success(t('habits.toast.created'));
           onClose();
         },
         onError,
@@ -126,14 +130,14 @@ function HabitForm({ habit, onClose }: { habit?: Habit | null; onClose: () => vo
       )}
 
       <Input
-        label="Title"
-        placeholder="Morning run"
-        error={errors.title?.message}
+        label={t('habits.field.title')}
+        placeholder={t('habits.field.titlePlaceholder')}
+        error={translateError(errors.title?.message)}
         {...register('title')}
       />
 
       <div className="flex flex-col gap-2">
-        <span className="text-body-sm font-medium text-ink">Target days</span>
+        <span className="text-body-sm font-medium text-ink">{t('habits.field.targetDays')}</span>
         <div className="flex flex-wrap gap-2">
           {TARGET_DAY_OPTIONS.map((day) => {
             const active = selected.includes(day);
@@ -149,29 +153,29 @@ function HabitForm({ habit, onClose }: { habit?: Habit | null; onClose: () => vo
                     : 'rounded-[6px] border border-pebble bg-snow px-3 py-1.5 text-caption font-medium text-slate hover:border-monday-violet'
                 }
               >
-                {DAY_SHORT[day]}
+                {t(`habits.days.${day}`)}
               </button>
             );
           })}
         </div>
         {errors.target_days && (
-          <p className="text-caption text-[#e05c5c]">{errors.target_days.message}</p>
+          <p className="text-caption text-[#e05c5c]">{translateError(errors.target_days.message)}</p>
         )}
       </div>
 
       <Input
         type="time"
-        label="Pengingat harian (opsional)"
-        error={errors.reminder_time?.message}
+        label={t('habits.field.reminder')}
+        error={translateError(errors.reminder_time?.message)}
         {...register('reminder_time')}
       />
 
       <div className="mt-2 flex justify-end gap-3">
         <Button type="button" variant="secondary" onClick={onClose} disabled={isPending}>
-          Cancel
+          {t('common.cancel')}
         </Button>
         <Button type="submit" isLoading={isPending}>
-          {habit ? 'Save changes' : 'Create habit'}
+          {habit ? t('habits.saveChanges') : t('habits.create')}
         </Button>
       </div>
     </form>
