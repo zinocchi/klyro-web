@@ -30,7 +30,12 @@
     "logoutConfirm": "Keluar",
     "loggedOut": "Berhasil keluar. Sampai jumpa!",
     "genericError": "Terjadi kesalahan. Coba lagi.",
-    "languageError": "Gagal menyimpan preferensi bahasa."
+    "languageError": "Gagal menyimpan preferensi bahasa.",
+    "selectTime": "Pilih jam",
+    "clearTime": "Hapus jam",
+    "hour": "Jam",
+    "minute": "Menit",
+    "now": "Sekarang"
   },
   "nav": {
     "dashboard": "Beranda",
@@ -59,7 +64,8 @@
     "noteTitle": "Pengingat catatan",
     "noteBody": "Catatanmu menunggu untuk dibuka.",
     "dailyTitle": "Pengingat keuangan harian",
-    "dailyBody": "Luangkan waktu mencatat pemasukan dan pengeluaran hari ini."
+    "dailyBody": "Luangkan waktu mencatat pemasukan dan pengeluaran hari ini.",
+    "taskIntervalBody": "\"{{title}}\" belum selesai — pengingat tiap {{hours}} jam."
   },
   "dashboard": {
     "title": "Beranda",
@@ -142,9 +148,7 @@
       "description": "Deskripsi",
       "descriptionPlaceholder": "Detail opsional",
       "dueDate": "Tenggat",
-      "dueDatePlaceholder": "Pilih tanggal (opsional)",
-      "reminder": "Pengingat (opsional)",
-      "reminderHint": "Kosongkan bila tidak perlu pengingat."
+      "dueDatePlaceholder": "Pilih tanggal (opsional)"
     },
     "subtasks": "Subtask",
     "subtaskPlaceholder": "Tambah langkah kecil...",
@@ -164,6 +168,23 @@
       "statusError": "Gagal memperbarui tugas",
       "subtaskError": "Gagal memperbarui subtask",
       "deleteError": "Gagal menghapus tugas"
+    },
+    "reminder": {
+      "title": "Pengingat",
+      "modeLabel": "Mode pengingat",
+      "modeAt": "Waktu tertentu",
+      "modeInterval": "Berulang tiap jam",
+      "preset": {
+        "deadline": "Pas deadline",
+        "before30": "30 menit sebelum",
+        "before1h": "1 jam sebelum"
+      },
+      "add": "Tambah jadwal",
+      "remove": "Hapus jadwal",
+      "intervalOption": "Tiap {{hours}} jam",
+      "intervalHint": "Berjalan pada jam aktif 08:00–21:00 sampai task selesai.",
+      "badgeSchedules": "{{count}} jadwal",
+      "badgeInterval": "Tiap {{hours}} jam"
     }
   },
   "habits": {

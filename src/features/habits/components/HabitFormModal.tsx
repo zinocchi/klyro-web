@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm, useWatch } from 'react-hook-form';
+import { Controller, useForm, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { Button } from '../../../components/ui/Button';
 import { Input } from '../../../components/ui/Input';
 import { Modal } from '../../../components/ui/Modal';
+import { TimePicker } from '../../../components/ui/TimePicker';
 import { ApiError } from '../../../lib/api';
 import { useFieldError } from '../../../i18n/useFieldError';
 import type { Habit, TargetDay } from '../../../types/api.types';
@@ -163,11 +164,18 @@ function HabitForm({ habit, onClose }: { habit?: Habit | null; onClose: () => vo
         )}
       </div>
 
-      <Input
-        type="time"
-        label={t('habits.field.reminder')}
-        error={translateError(errors.reminder_time?.message)}
-        {...register('reminder_time')}
+      <Controller
+        control={control}
+        name="reminder_time"
+        render={({ field }) => (
+          <TimePicker
+            label={t('habits.field.reminder')}
+            value={field.value ?? ''}
+            onChange={field.onChange}
+            clearable
+            error={translateError(errors.reminder_time?.message)}
+          />
+        )}
       />
 
       <div className="mt-2 flex justify-end gap-3">

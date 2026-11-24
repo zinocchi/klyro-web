@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { AlarmClock, Check, Pencil, Trash2 } from 'lucide-react';
+import { AlarmClock, Check, Pencil, Repeat, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { ConfirmModal } from '../../../components/ui/ConfirmModal';
 import { cn, formatDate, formatDateTime } from '../../../lib/utils';
@@ -71,12 +71,25 @@ export function TaskCard({ task, onEdit }: TaskCardProps) {
               {doneSubtasks}/{task.subtasks.length}
             </Pill>
           )}
-          {task.reminder_at && (
+          {(task.reminders?.length ?? 0) > 0 ? (
             <Pill className="gap-1 bg-sky text-ink">
               <AlarmClock size={12} />
-              {formatDateTime(task.reminder_at)}
+              {t('tasks.reminder.badgeSchedules', { count: task.reminders.length })}
             </Pill>
+          ) : (
+            task.reminder_at && (
+              <Pill className="gap-1 bg-sky text-ink">
+                <AlarmClock size={12} />
+                {formatDateTime(task.reminder_at)}
+              </Pill>
+            )
           )}
+          {task.reminder_interval ? (
+            <Pill className="gap-1 bg-[#ffe0c2] text-ink">
+              <Repeat size={12} />
+              {t('tasks.reminder.badgeInterval', { hours: task.reminder_interval })}
+            </Pill>
+          ) : null}
         </div>
 
         {task.description && (

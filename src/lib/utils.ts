@@ -118,7 +118,7 @@ export function formatDateTime(value: string | Date | null | undefined): string 
   });
 }
 
-/** `YYYY-MM-DDTHH:mm` (local) for `<input type="datetime-local">`. */
+/** `YYYY-MM-DDTHH:mm` (local) — the value shape the note reminder form stores. */
 export function toDateTimeInputValue(value: string | Date | null | undefined): string {
   const date = parseDate(value);
   return date ? format(date, "yyyy-MM-dd'T'HH:mm") : '';
@@ -137,6 +137,12 @@ export function formatLongDate(value: string | Date | null | undefined): string 
 export function formatDateKey(value: string | Date | null | undefined): string {
   const date = parseDate(value);
   return date ? format(date, 'yyyy-MM-dd') : '';
+}
+
+/** `HH:mm` in local time, or an empty string when the value is unparseable. */
+export function formatTimeKey(value: string | Date | null | undefined): string {
+  const date = parseDate(value);
+  return date ? format(date, 'HH:mm') : '';
 }
 
 /** Shift a `YYYY-MM-DD` key by whole days, staying in key format. */

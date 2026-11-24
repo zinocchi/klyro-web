@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm, useWatch } from 'react-hook-form';
+import { Controller, useForm, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { BellRing } from 'lucide-react';
 import { toast } from 'sonner';
@@ -8,6 +8,7 @@ import { Button } from '../../../components/ui/Button';
 import { Card, CardContent, CardHeader } from '../../../components/ui/Card';
 import { Input } from '../../../components/ui/Input';
 import { Select } from '../../../components/ui/Select';
+import { TimePicker } from '../../../components/ui/TimePicker';
 import { ApiError } from '../../../lib/api';
 import { formatIDR } from '../../../lib/utils';
 import { useFieldError } from '../../../i18n/useFieldError';
@@ -123,11 +124,18 @@ function ProfileCard() {
             </div>
 
             <div className="flex flex-col gap-1">
-              <Input
-                label={t('settings.profile.reminderTime')}
-                type="time"
-                error={translateError(errors.daily_reminder_time?.message)}
-                {...register('daily_reminder_time')}
+              <Controller
+                control={control}
+                name="daily_reminder_time"
+                render={({ field }) => (
+                  <TimePicker
+                    label={t('settings.profile.reminderTime')}
+                    value={field.value ?? ''}
+                    onChange={field.onChange}
+                    clearable
+                    error={translateError(errors.daily_reminder_time?.message)}
+                  />
+                )}
               />
               <p className="text-caption text-iron">{t('settings.profile.reminderTimeHint')}</p>
             </div>

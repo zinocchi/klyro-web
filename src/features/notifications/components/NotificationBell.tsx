@@ -13,6 +13,7 @@ import {
 import { formatDistanceToNow } from 'date-fns';
 import { enUS, id as idLocale } from 'date-fns/locale';
 import { cn, parseDate } from '../../../lib/utils';
+import { PickerPopover } from '../../../components/ui/pickerParts';
 import type { NotificationType } from '../../../types/api.types';
 import {
   useMarkAllNotificationsRead,
@@ -76,12 +77,14 @@ export function NotificationBell() {
         )}
       </button>
 
-      {open && (
-        <div
-          role="dialog"
-          aria-label={t('notifications.title')}
-          className="absolute right-0 z-50 mt-2 w-[min(calc(100vw-2rem),22rem)] overflow-hidden rounded-[24px] border border-mist bg-snow shadow-[var(--shadow-elevated)]"
-        >
+      <PickerPopover
+        open={open}
+        onClose={() => setOpen(false)}
+        anchorRef={containerRef}
+        align="end"
+        label={t('notifications.title')}
+        panelClassName="w-[min(calc(100vw-2rem),22rem)] overflow-hidden p-0"
+      >
           <div className="flex items-center justify-between gap-2 border-b border-mist px-4 py-3">
             <h2 className="text-body-sm font-medium text-ink">{t('notifications.title')}</h2>
             <button
@@ -162,8 +165,7 @@ export function NotificationBell() {
               </ul>
             )}
           </div>
-        </div>
-      )}
+      </PickerPopover>
     </div>
   );
 }

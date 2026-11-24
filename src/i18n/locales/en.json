@@ -30,7 +30,12 @@
     "logoutConfirm": "Log out",
     "loggedOut": "Signed out. See you soon!",
     "genericError": "Something went wrong. Please try again.",
-    "languageError": "Could not save your language preference."
+    "languageError": "Could not save your language preference.",
+    "selectTime": "Pick a time",
+    "clearTime": "Clear time",
+    "hour": "Hour",
+    "minute": "Minute",
+    "now": "Now"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -59,7 +64,8 @@
     "noteTitle": "Note reminder",
     "noteBody": "Your note is waiting.",
     "dailyTitle": "Daily finance reminder",
-    "dailyBody": "Take a moment to log today's income and spending."
+    "dailyBody": "Take a moment to log today's income and spending.",
+    "taskIntervalBody": "\"{{title}}\" is still open — repeating every {{hours}} hour(s)."
   },
   "dashboard": {
     "title": "Dashboard",
@@ -142,9 +148,7 @@
       "description": "Description",
       "descriptionPlaceholder": "Optional details",
       "dueDate": "Due date",
-      "dueDatePlaceholder": "Pick a date (optional)",
-      "reminder": "Reminder (optional)",
-      "reminderHint": "Leave empty if you do not need a reminder."
+      "dueDatePlaceholder": "Pick a date (optional)"
     },
     "subtasks": "Subtasks",
     "subtaskPlaceholder": "Add a small step...",
@@ -164,6 +168,23 @@
       "statusError": "Could not update the task",
       "subtaskError": "Could not update the subtask",
       "deleteError": "Could not delete the task"
+    },
+    "reminder": {
+      "title": "Reminder",
+      "modeLabel": "Reminder mode",
+      "modeAt": "Specific times",
+      "modeInterval": "Repeat hourly",
+      "preset": {
+        "deadline": "At deadline",
+        "before30": "30 min before",
+        "before1h": "1 hour before"
+      },
+      "add": "Add schedule",
+      "remove": "Remove schedule",
+      "intervalOption": "Every {{hours}}h",
+      "intervalHint": "Runs during active hours 08:00–21:00 until the task is done.",
+      "badgeSchedules": "{{count}} reminders",
+      "badgeInterval": "Every {{hours}}h"
     }
   },
   "habits": {

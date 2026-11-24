@@ -77,8 +77,12 @@ export interface Task {
   priority: TaskPriority;
   /** Max 100 entries. */
   subtasks: Subtask[];
-  /** ISO-8601 datetime, or `null`. */
+  /** Legacy single reminder (ISO-8601), or `null`. Superseded by `reminders`. */
   reminder_at: string | null;
+  /** ISO-8601 datetimes, max 50. */
+  reminders: string[];
+  /** Repeat every N whole hours (08:00–21:00) until completed, or `null`. */
+  reminder_interval: number | null;
   created_at: string;
 }
 
@@ -182,6 +186,8 @@ export interface CreateTaskRequest {
   priority?: TaskPriority;
   subtasks?: Subtask[];
   reminder_at?: string | null;
+  reminders?: string[];
+  reminder_interval?: number | null;
 }
 
 export interface UpdateTaskRequest {
@@ -192,6 +198,8 @@ export interface UpdateTaskRequest {
   priority?: TaskPriority;
   subtasks?: Subtask[];
   reminder_at?: string | null;
+  reminders?: string[];
+  reminder_interval?: number | null;
 }
 
 export interface TaskQueryParams {
@@ -341,4 +349,10 @@ export interface NotificationData {
 
 export interface NotificationsReadAllData {
   updated: number;
+}
+
+export interface CreateNotificationRequest {
+  type: NotificationType;
+  title: string;
+  message: string;
 }

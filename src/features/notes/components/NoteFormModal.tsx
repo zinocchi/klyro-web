@@ -1,14 +1,16 @@
 import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm, useWatch } from 'react-hook-form';
+import { Controller, useForm, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { Button } from '../../../components/ui/Button';
+import { DatePicker } from '../../../components/ui/DatePicker';
+import { TimePicker } from '../../../components/ui/TimePicker';
 import { Input } from '../../../components/ui/Input';
 import { Modal } from '../../../components/ui/Modal';
 import { ApiError } from '../../../lib/api';
 import { useFieldError } from '../../../i18n/useFieldError';
-import { cn, toDateTimeInputValue } from '../../../lib/utils';
+import { cn, toDateKey, toDateTimeInputValue } from '../../../lib/utils';
 import type { Note } from '../../../types/api.types';
 import { useCreateNote, useUpdateNote } from '../hooks/useNotes';
 import { noteFormSchema, type NoteFormValues } from '../schemas/note.schema';
@@ -183,11 +185,34 @@ function NoteForm({ note, onClose }: { note?: Note | null; onClose: () => void }
         )}
       </div>
 
-      <Input
-        type="datetime-local"
-        label={t('notes.field.reminder')}
-        error={translateError(errors.remind_at?.message)}
-        {...register('remind_at')}
+      <Controller
+        control={control}
+        name="remind_at"
+        render={({ field }) => {
+          const current = field.value ?? '';
+          const date = current.slice(0, 10);
+          const time = current.slice(11, 16);
+          return (
+            <div className="flex flex-col gap-2">
+              <span className="text-body-sm font-medium text-ink">
+                {t('notes.field.reminder')}
+              </span>
+              <div className="grid grid-cols-[minmax(0,1fr)_8rem] gap-2">
+                <DatePicker
+                  value={date}
+                  onChange={(next) => field.onChange(next ? `${next}T${time || '09:00'}` : '')}
+                  clearable
+                  error={translateError(errors.remind_at?.message)}
+                />
+                <TimePicker
+                  value={time}
+                  onChange={(next) => field.onChange(next ? `${date || toDateKey()}T${next}` : '')}
+                  align="end"
+                />
+              </div>
+            </div>
+          );
+        }}
       />
 
       <button

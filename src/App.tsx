@@ -60,24 +60,28 @@ function App() {
         gap={12}
         offset={16}
         toastOptions={{
-          duration: 4000,
+          duration: 5000,
           style: {
             fontFamily: 'var(--font-poppins)',
             fontSize: 'var(--text-body-sm)',
             borderRadius: '16px',
-            border: '1px solid var(--color-mist)',
-            boxShadow: 'var(--shadow-card)',
-            background: 'var(--color-snow)',
+            border: '1.5px solid #6161ff',
+            boxShadow: '0 8px 24px rgba(205, 208, 223, 0.55)',
+            background: '#ffffff',
             color: 'var(--color-ink)',
             padding: '14px 16px',
           },
           classNames: {
-            toast: 'items-start',
+            toast: 'items-start !bg-white',
             title: 'font-medium',
             description: 'text-slate',
+            success: '!border-[#00c875]',
+            error: '!border-[#e2445c]',
+            warning: '!border-[#fdab3d]',
+            info: '!border-[#6161ff]',
             actionButton: 'rounded-full bg-monday-violet text-snow',
             cancelButton: 'rounded-full bg-cloud text-slate',
-            closeButton: 'border-mist bg-snow text-slate',
+            closeButton: 'border-mist bg-white text-slate',
           },
         }}
       />
